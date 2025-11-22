@@ -149,11 +149,12 @@
 
     <script>
         // =================================================================
-        // ⚠️ الخطوة الأخيرة والأهم: ضع مفتاح API هنا مباشرة ⚠️
+        // ⚠️ هام جداً: ضع مفتاح API هنا مباشرة بين علامات التنصيص
         // =================================================================
-        const API_KEY = "AIzaSyACQQJiuXochh37NgmglgflxsLPU3R92Pk"; // 👈 امسح الكلمة دي وحط مفتاحك هنا بين علامات التنصيص
+        const API_KEY = "AIzaSyACQQJiuXochh37NgmglgflxsLPU3R92Pk"; // 👈 امسح الكلمة دي وحط مفتاحك هنا
         
         const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbytnMAGBbWM_eSxUQxIqU6F7xUoxAH1P5olmGMER3YacoJRCmzX5L5_Wy4rVCLfVgsw/exec"; 
+
         const PROPOSAL_STORAGE_KEY = 'daad_proposal';
         const CLIENT_INFO_KEY = 'daad_client';
         const MAX_MONTHS = 12;
@@ -262,7 +263,7 @@
         // *** الاتصال المباشر (Client-Side Fetch) ***
         async function callAssistant(payload) {
             try {
-                if (!API_KEY || API_KEY.includes("YOUR_API_KEY_HERE")) {
+                if (!API_KEY || API_KEY === "YOUR_API_KEY_HERE") {
                     return "⚠️ خطأ: يرجى وضع مفتاح API في كود index.html (السطر 280) ثم إعادة الرفع.";
                 }
 
