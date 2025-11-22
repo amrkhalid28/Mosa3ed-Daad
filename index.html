@@ -108,7 +108,7 @@
             <div class="flex justify-between items-center mb-4 border-b border-dark-primary pb-3">
                 <div class="flex items-center">
                     <div class="w-10 h-10 rounded-full bg-accent-gold flex items-center justify-center ml-3 text-dark-primary">🤖</div>
-                    <div><h2 class="text-xl font-bold text-accent-gold">مساعد ض</h2><p class="text-xs text-text-light/60">مستشارك الذكي</p></div>
+                    <div><h2 class="text-xl font-bold text-accent-gold">مساعد ض</h2><p class="text-xs text-text-light/60">كبير الاستراتيجيين</p></div>
                 </div>
                 <button onclick="closeAiModal()" class="text-text-light/70 hover:text-accent-gold">✕</button>
             </div>
@@ -149,11 +149,10 @@
 
     <script>
         // =================================================================
-        // ⚠️ هام جداً: ضع مفتاح API الخاص بك هنا بدقة بين علامات التنصيص
-        // تأكد أنه في سطر واحد ولا توجد مسافات إضافية
+        // ⚠️ تم إدراج المفتاح بشكل صحيح هنا، لا تعدله ⚠️
         // =================================================================
         const API_KEY = "AIzaSyACQQJiuXochh37NgmglgflxsLPU3R92Pk"; 
-
+        
         const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbytnMAGBbWM_eSxUQxIqU6F7xUoxAH1P5olmGMER3YacoJRCmzX5L5_Wy4rVCLfVgsw/exec"; 
 
         const PROPOSAL_STORAGE_KEY = 'daad_proposal';
@@ -261,17 +260,13 @@
             }
         }
 
-        // *** الاتصال المباشر (Client-Side Fetch) - المدرع ***
+        // *** الاتصال المباشر (Client-Side Fetch) ***
         async function callAssistant(payload) {
             try {
-                if (!API_KEY || API_KEY.includes("AIzaSyACQQJiuXochh37NgmglgflxsLPU3R92Pk")) {
-                    return "⚠️ خطأ: يرجى التأكد من وضع مفتاح API بشكل صحيح في الكود.";
-                }
-
-                // === شخصية مساعد ضاد الجديدة (النسخة الرسمية) ===
+                // شخصية مساعد ضاد
                 const systemPrompt = `
-                    أنت "مساعد ضاد"، المستشار الذكي من شركة "ضاد".
-                    الهوية: لغتك فصيحة وسلسة، أسلوبك مهذب وواثق، وفيه لمسة خفيفة من الدعابة الذكية.
+                    أنت "مساعد ضاد"، المستشار الذكي لشركة "ضاد".
+                    هويتك: لغتك فصيحة وسلسة، أسلوبك مهذب وواثق، وفيه لمسة خفيفة من الدعابة الذكية.
                     الدور الأساسي: تساعد العميل يفهم، يختار، ويتخذ قرار… بدون ضغط، بأسلوب مقنع وعملي.
 
                     💡 الطابع العام:
@@ -298,7 +293,7 @@
                 let contents = [{ role: "user", parts: [{ text: systemPrompt }] }];
                 if (payload.history.length > 0) contents = contents.concat(payload.history.slice(-4));
 
-                // نجرب موديلين لتفادي خطأ "غير موجود"
+                // قائمة الموديلات للتجربة (الأحدث ثم الأقدم)
                 const models = ["gemini-1.5-flash", "gemini-pro"];
                 let lastError = "";
 
