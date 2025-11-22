@@ -50,6 +50,7 @@
 </head>
 <body class="text-text-light antialiased">
 
+    <!-- الشاشة الرئيسية -->
     <main id="home-view" class="min-h-screen w-full flex items-center justify-center p-4 transition-opacity duration-500 opacity-100">
         <div class="max-w-4xl mx-auto w-full">
             <img src="https://i.ibb.co/fz5m8DNf/imgi-102-cropped-cropped-logo-daad-2000x2000-1-1-700x700-removebg-preview.png" alt="Daad Logo" class="h-20 w-auto rounded-lg shadow-md border border-accent-gold mx-auto mb-6" onerror="this.onerror=null; this.src='https://placehold.co/100x80/501323/D5C5A0?text=DAAD';">
@@ -68,6 +69,7 @@
         </div>
     </main>
 
+    <!-- نافذة البيانات -->
     <div id="client-info-modal" class="modal-backdrop fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-[100] opacity-0 pointer-events-none hidden" onclick="closeClientInfoModal()">
         <div class="bg-dark-secondary rounded-xl shadow-2xl border border-accent-gold/50 max-w-3xl w-full p-6" onclick="event.stopPropagation()">
             <div class="flex justify-between items-center mb-4">
@@ -100,12 +102,13 @@
         </div>
     </div>
 
+    <!-- نافذة الشات -->
     <div id="ai-modal" class="modal-backdrop fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-[100] opacity-0 pointer-events-none hidden" onclick="closeAiModal()">
         <div class="bg-dark-secondary rounded-xl shadow-2xl border border-accent-gold/50 max-w-3xl w-full p-6 flex flex-col h-[85vh]" onclick="event.stopPropagation()">
             <div class="flex justify-between items-center mb-4 border-b border-dark-primary pb-3">
                 <div class="flex items-center">
                     <div class="w-10 h-10 rounded-full bg-accent-gold flex items-center justify-center ml-3 text-dark-primary">🤖</div>
-                    <div><h2 class="text-xl font-bold text-accent-gold">مساعد ض</h2><p class="text-xs text-text-light/60">مستشارك الذكي من شركة ضاد</p></div>
+                    <div><h2 class="text-xl font-bold text-accent-gold">مساعد ض</h2><p class="text-xs text-text-light/60">مستشارك الذكي</p></div>
                 </div>
                 <button onclick="closeAiModal()" class="text-text-light/70 hover:text-accent-gold">✕</button>
             </div>
@@ -117,6 +120,7 @@
         </div>
     </div>
 
+    <!-- التطبيق -->
     <div id="app-view" class="min-h-screen flex flex-col print-area hidden">
         <header class="sticky top-0 bg-dark-primary shadow-2xl p-4 z-20 no-print border-b border-dark-secondary">
             <div class="max-w-7xl mx-auto flex justify-between items-center">
@@ -146,6 +150,7 @@
     <script>
         // =================================================================
         // ⚠️ ضع مفتاحك هنا بحرص شديد بين العلامتين ⚠️
+        // تأكد من عدم وجود مسافات زائدة أو أسطر جديدة
         // =================================================================
         const API_KEY = "AIzaSyACQQJiuXochh37NgmglgflxsLPU3R92Pk"; 
         
@@ -256,38 +261,38 @@
             }
         }
 
-        // *** الاتصال المباشر (Client-Side Fetch) - المدرع ***
+        // *** الاتصال المباشر مع الشخصية الجديدة (مساعد ضاد) ***
         async function callAssistant(payload) {
             try {
-                if (!API_KEY || API_KEY.includes("AIzaSyACQQJiuXochh37NgmglgflxsLPU3R92Pk")) {
-                    return "⚠️ خطأ: يرجى وضع مفتاح API في كود index.html (السطر 283).";
+                if (!API_KEY || API_KEY.includes("AIzaSyACQQJiuXochh37NgmglgflxsLPU3R92Pk") || API_KEY.length < 20) {
+                    return "⚠️ خطأ: يرجى التأكد من وضع مفتاح API بشكل صحيح في الكود (السطر 151).";
                 }
 
-                // === تحديث الشخصية (مساعد ضاد الذكي) ===
+                // === شخصية مساعد ضاد الرسمية ===
                 const systemPrompt = `
                     أنت "مساعد ضاد"، المستشار الذكي لشركة "ضاد".
-                    هويتك: لغتك فصيحة وسلسة، أسلوبك مهذب وواثق مع لمسة خفيفة من الدعابة الذكية.
-                    دورك: مساعدة العميل على الفهم والاختيار واتخاذ القرار بدون ضغط.
+                    الهوية: لغتك فصيحة وسلسة، أسلوبك مهذب وواثق، مع لمسة خفيفة من الدعابة الذكية.
+                    الدور: مساعدة العميل على الفهم، الاختيار، واتخاذ القرار بدون ضغط.
                     
-                    قواعد الرد:
-                    1. تكلم بعربية فصحى بسيطة أو لهجة سعودية بيضاء، بأسلوب محترم واحترافي دائماً.
+                    القواعد الأساسية:
+                    1. تحدث بعربية فصحى بسيطة أو لهجة سعودية بيضاء محترمة.
                     2. كن صريحاً ومباشراً، وقدم إجابات مرتبة (الفكرة -> السبب -> الحل).
-                    3. كن تحليلياً: اسحب النقاط الهامة من كلام العميل ورد عليها.
+                    3. كن تحليلياً: اسحب 3-4 نقاط هامة من كلام العميل ورد عليها بذكاء.
                     4. كن مطمئناً وهادئاً، واذكر اسم العميل لتعزيز الثقة.
                     5. لا تقدم وعوداً مطلقة (مثل "أضمن لك 100%") بل قل "الأرقام عادة تكون كذا".
                     6. اربط كل اقتراح بنتيجة ملموسة (مبيعات، ظهور، ثقة).
 
-                    🔴 هام جداً: إذا سأل العميل عن الأسعار (كم السعر؟، بكم؟، التكلفة؟)، رد حصراً بهذه الجملة:
+                    🔴 هام جداً (التسعير): إذا سأل العميل عن الأسعار (كم السعر؟، بكم؟، التكلفة؟)، رد حصراً بهذه الجملة:
                     "بالنسبة للتسعير… علشان أعطيك رقم دقيق يناسب وضع مشروعك، فضلاً انتقل إلى المسؤول مباشرة عبر علامة ضاد الموجودة أسفل الصفحة. هو اللي يقدر يوضح لك السعر الأنسب حسب احتياجك بالضبط."
 
                     بيانات العميل الحالية: ${JSON.stringify(payload.clientInfo)}
-                    ${payload.isFirstRun ? "ابدأ بترحيب بأسلوبك المميز وحلل البيانات المتاحة." : ""}
+                    ${payload.isFirstRun ? "ابدأ بترحيب بأسلوبك المميز (يا هلا، خلّيني أوضحها لك بشكل بسيط...) وحلل البيانات المتاحة." : ""}
                 `;
 
                 let contents = [{ role: "user", parts: [{ text: systemPrompt }] }];
                 if (payload.history.length > 0) contents = contents.concat(payload.history.slice(-4));
 
-                // نجرب موديلين لتفادي خطأ "غير موجود"
+                // تجربة الموديل الأحدث (flash) ثم الأقدم (pro) إذا فشل الأول
                 const models = ["gemini-1.5-flash", "gemini-pro"];
                 let lastError = "";
 
