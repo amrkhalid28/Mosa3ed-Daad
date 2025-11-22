@@ -149,9 +149,10 @@
 
     <script>
         // =================================================================
-        // ⚠️ هام جداً: ضع مفتاح API هنا مباشرة بين علامات التنصيص
+        // ⚠️ هام جداً: ضع مفتاح API هنا مباشرة بين علامات التنصيص ⚠️
         // =================================================================
         const API_KEY = "AIzaSyAJhLi80FUaNujSHh7xyo_dUWvqpr7U830"; // 👈 امسح الكلمة دي وحط مفتاحك هنا
+
         
         const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbytnMAGBbWM_eSxUQxIqU6F7xUoxAH1P5olmGMER3YacoJRCmzX5L5_Wy4rVCLfVgsw/exec"; 
 
@@ -263,7 +264,7 @@
         // *** الاتصال المباشر (Client-Side Fetch) - المدرع ***
         async function callAssistant(payload) {
             try {
-                if (!API_KEY || API_KEY.includes("YOUR_API_KEY_HERE")) {
+                if (!API_KEY || API_KEY === "ضع_مفتاحك_هنا") {
                     return "⚠️ خطأ: يرجى وضع مفتاح API في كود index.html (السطر 283).";
                 }
 
