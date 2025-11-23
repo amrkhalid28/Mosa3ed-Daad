@@ -284,18 +284,16 @@
             const CONSTANTS = {
                 // الروابط المنفصلة للتخزين والذكاء الاصطناعي
                 URLS: {
-                    // 👇 ضع الرابط الجديد هنا 👇
+                    // 👇 تأكد من أن الروابط هنا صحيحة كما نسختها من السكربت 👇
                     STORAGE: "https://script.google.com/macros/s/AKfycbytnMAGBbWM_eSxUQxIqU6F7xUoxAH1P5olmGMER3YacoJRCmzX5L5_Wy4rVCLfVgsw/exec",
-                    
-                    // 👇 وضع الرابط الجديد هنا أيضاً (أو اتركهما مختلفين إذا كنت تستخدم سكربتين منفصلين) 👇
-                    ASSISTANT: "https://script.google.com/macros/s/AKfycbwhuHgYyCVAr5xzgsV2FmSvfxsvCZhFCxGRax4OWnSwkr5JOY8YKn-GL3IW8q0nsw-K-w/exec"
+                    ASSISTANT: "https://script.google.com/macros/s/AKfycbwhuHgYyCVAr5xzgsV2FmSvfxsvCZhFCxGRax4OWnSwkr5JOY8YKn-GL3IW8q0nsw-K-w/exec" 
                 },
                 KEYS: {
                     PROPOSAL: 'daad_proposal_v2',
                     CLIENT: 'daad_client_v2'
                 },
                 MAX_MONTHS: 12,
-                TIMEOUT_MS: 25000 // 25 seconds
+                TIMEOUT_MS: 30000 // 30 seconds
             };
 
             // --- STATE ---
@@ -321,7 +319,6 @@
             // --- UTILS ---
             const $ = (id) => document.getElementById(id);
             
-            // دالة تنظيف النصوص للحماية من XSS
             const escapeHtml = (unsafe) => {
                 if (typeof unsafe !== 'string') return unsafe;
                 return unsafe
@@ -364,7 +361,6 @@
                 if(!info) return;
                 const fields = ['name', 'phone', 'link', 'businessType', 'targetAudience', 'strategyGoal', 'budgetRange', 'competitors', 'socials', 'challenges', 'additionalInfo'];
                 fields.forEach(f => {
-                    // Mapping internal keys to DOM IDs
                     const el = $(`client-${f === 'phone' ? 'contact-phone' : f === 'socials' ? 'social-links' : f}`);
                     if(el) el.value = info[f] || '';
                 });
@@ -389,7 +385,6 @@
 
             // --- API METHODS ---
             async function sendToStorage(data) {
-                // استخدام no-cors ضروري لـ Google Scripts عند العمل كـ Webhook بسيط
                 return fetch(CONSTANTS.URLS.STORAGE, { 
                     method: 'POST', 
                     mode: 'no-cors', 
@@ -398,17 +393,77 @@
                 });
             }
 
-            async function callAssistantAPI(payload) {
+            // ⚠️ الدالة المعدلة: بناء الطلب بالكامل هنا ⚠️
+            async function callAssistantAPI(originalPayload) {
                 const controller = new AbortController();
                 const timeoutId = setTimeout(() => controller.abort(), CONSTANTS.TIMEOUT_MS);
 
+                // 1. بناء النص التوجيهي (Prompt)
+                let promptText = "";
+                
+                // إذا كانت أول مرة، أضف تعليمات النظام وبيانات العميل
+                if (originalPayload.isFirstRun) {
+                    const client = originalPayload.clientInfo;
+                    promptText = `
+أنت "مساعد ضاد"، المستشار الذكي لشركة "ضاد".
+هويتك: لغتك فصيحة وسلسة، أسلوبك مهذب وواثق مع لمسة خفيفة من الدعابة الذكية.
+دورك: تحليل بيانات العميل واقتراح خطة.
+
+بيانات العميل:
+- الاسم: ${client.name}
+- النشاط: ${client.businessType}
+- الهدف: ${client.strategyGoal}
+- الميزانية: ${client.budgetRange}
+- الجمهور: ${client.targetAudience}
+- المنافسين: ${client.competitors}
+- التحديات: ${client.challenges}
+
+ابدأ بالترحيب بالعميل (اسمه ${client.name}) ثم قدم تحليلاً مبدئياً مختصراً واقتراحاً للخطوة التالية.
+`;
+                } else {
+                    // في المحادثات التالية، نأخذ آخر رسالة من المستخدم
+                    const lastMsg = originalPayload.history[originalPayload.history.length - 1];
+                    if (lastMsg && lastMsg.role === 'user') {
+                        promptText = lastMsg.parts[0].text;
+                    }
+                }
+
+                // 2. تجهيز سجل المحادثة بتنسيق Gemini الصحيح
+                // نحتاج لتحويل سجل المحادثة السابق ليكون متوافقاً
+                // ملاحظة: نقوم بفلترة الرسائل للتأكد من صحتها
+                let contents = [];
+
+                // إذا كان هناك سجل سابق، نضيفه (ما عدا الرسالة الأخيرة التي أضفناها كـ promptText إذا لم تكن FirstRun)
+                if (originalPayload.history && originalPayload.history.length > 0) {
+                     // نسخ التاريخ القديم
+                     contents = [...originalPayload.history];
+                     
+                     // إذا لم تكن المرة الأولى، فإن آخر رسالة هي السؤال الحالي، لذا لا نضيفها مرتين
+                     // لكن في هيكلة Gemini، الـ contents يجب أن يحتوي كل شيء
+                     // لذا سنعتمد الهيكلة الكاملة مباشرة
+                }
+
+                // الطريقة الأضمن: بناء مصفوفة contents جديدة بالكامل للإرسال
+                // إذا كانت المرة الأولى، الرسالة هي System Prompt كرسالة User
+                if (originalPayload.isFirstRun) {
+                    contents = [{ role: "user", parts: [{ text: promptText }] }];
+                } else {
+                    // إذا لم تكن المرة الأولى، نستخدم التاريخ الموجود كما هو لأنه أصلاً بصيغة Gemini
+                    contents = originalPayload.history;
+                }
+
+                // 3. بناء الجسم النهائي المتوافق مع Gemini API
+                const geminiBody = {
+                    contents: contents
+                };
+
                 try {
-                    // FIX: Change Content-Type to text/plain to avoid CORS preflight (OPTIONS) request failure
                     const response = await fetch(CONSTANTS.URLS.ASSISTANT, {
                         method: 'POST',
                         mode: 'cors',
-                        headers: { 'Content-Type': 'text/plain;charset=utf-8' }, 
-                        body: JSON.stringify(payload),
+                        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                        // نرسل الهيكل الجاهز لـ Gemini مباشرة
+                        body: JSON.stringify(geminiBody),
                         signal: controller.signal
                     });
                     
@@ -416,23 +471,28 @@
 
                     if (!response.ok) {
                         const errText = await response.text();
+                        // محاولة لتحسين رسالة الخطأ
+                        try {
+                            const errJson = JSON.parse(errText);
+                            if(errJson.error && errJson.error.message) {
+                                throw new Error(errJson.error.message);
+                            }
+                        } catch(e) {}
                         throw new Error(`Server Error: ${response.status} - ${errText}`);
                     }
 
                     const text = await response.text();
                     try {
-                        // محاولة استخراج النص من JSON
                         const json = JSON.parse(text);
-                        // دعم هياكل مختلفة للرد
                         return json.candidates?.[0]?.content?.parts?.[0]?.text || json.text || json.reply || JSON.stringify(json);
                     } catch (e) {
-                        return text; // في حالة كان نصاً عادياً
+                        return text;
                     }
 
                 } catch(error) {
                     clearTimeout(timeoutId);
                     if (error.name === 'AbortError') {
-                        throw new Error('انتهت مهلة الاتصال (Timeout). الخادم مشغول جداً.');
+                        throw new Error('انتهت مهلة الاتصال. الخادم مشغول، حاول مرة أخرى.');
                     }
                     throw error;
                 }
@@ -473,7 +533,7 @@
                 if(!state.monthlySelections[monthIndex]) state.monthlySelections[monthIndex] = {};
                 if(isChecked) state.monthlySelections[monthIndex][serviceId] = true;
                 else delete state.monthlySelections[monthIndex][serviceId];
-                saveState(); // الحفظ دون إعادة رسم كاملة لتحسين الأداء
+                saveState();
             }
 
             function addNextMonth() {
@@ -481,7 +541,6 @@
                     state.visibleMonths++;
                     state.monthlySelections.push({});
                     renderGrid();
-                    // Scroll to bottom slightly
                     window.scrollBy({ top: 200, behavior: 'smooth' });
                 } else {
                     showMessage("لقد وصلت للحد الأقصى للأشهر (12)", "bg-highlight-orange", "text-dark-primary");
@@ -492,11 +551,9 @@
                 const el = $('system-message');
                 el.textContent = msg;
                 el.className = `fixed top-24 right-4 max-w-sm w-full p-4 rounded-xl shadow-2xl z-50 border-r-4 font-bold transform transition-all duration-500 ${bgClass} ${textClass}`;
-                // Show
                 requestAnimationFrame(() => {
                     el.classList.remove('translate-x-full', 'opacity-0');
                 });
-                // Hide
                 setTimeout(() => {
                     el.classList.add('translate-x-full', 'opacity-0');
                 }, 4000);
@@ -505,7 +562,6 @@
             function openModal(id, autoTriggerAI = false) {
                 const modal = $(id);
                 modal.classList.remove('invisible');
-                // Small delay to allow transition
                 requestAnimationFrame(() => {
                     modal.classList.remove('opacity-0');
                     modal.firstElementChild.classList.remove('scale-95');
@@ -538,11 +594,8 @@
                     div.id = "loading-msg";
                     div.innerHTML = `<div class="loading-dots flex gap-1"><span></span><span></span><span></span></div>`;
                 } else {
-                    // Security: Escape HTML first, then allow basic formatting
                     let safeText = escapeHtml(text);
-                    // Convert **text** to <strong>text</strong>
                     safeText = safeText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-                    // Convert newlines to <br>
                     safeText = safeText.replace(/\n/g, '<br>');
                     div.innerHTML = safeText;
                 }
@@ -565,10 +618,8 @@
                     return;
                 }
 
-                // Save Local
                 localStorage.setItem(CONSTANTS.KEYS.CLIENT, JSON.stringify(info));
                 
-                // UI Loading State
                 const btn = $('save-client-info-btn');
                 const originalText = btn.innerHTML;
                 btn.disabled = true;
@@ -599,18 +650,17 @@
                 if(!txt) return;
 
                 input.value = '';
-                input.style.height = 'auto'; // Reset height
+                input.style.height = 'auto'; 
                 addChatMsg(txt, 'user');
                 state.chatHistory.push({role: 'user', parts: [{text: txt}]});
 
-                // Disable button while processing
                 $('chat-send-btn').disabled = true;
                 addChatMsg("...", 'bot', true);
 
                 const info = JSON.parse(localStorage.getItem(CONSTANTS.KEYS.CLIENT) || '{}');
                 
                 try {
-                    const reply = await callAssistantAPI({ history: state.chatHistory, clientInfo: info });
+                    const reply = await callAssistantAPI({ history: state.chatHistory, clientInfo: info, isFirstRun: false });
                     removeLoading();
                     addChatMsg(reply, 'bot');
                     state.chatHistory.push({role: 'model', parts: [{text: reply}]});
@@ -628,6 +678,8 @@
                 addChatMsg("جاري تحليل بيانات مشروعك وبناء الخطة...", 'bot', true);
                 
                 try {
+                    // إرسال طلب جديد مع بيانات العميل فقط، وتجاهل أي تاريخ سابق لهذه الجلسة
+                    state.chatHistory = []; 
                     const reply = await callAssistantAPI({ history: [], clientInfo: info, isFirstRun: true });
                     removeLoading();
                     addChatMsg(reply, 'bot');
@@ -663,7 +715,6 @@
                     loadState();
                     renderGrid();
                     
-                    // Enter key support for chat
                     $('chat-input').addEventListener('keypress', (e) => {
                         if(e.key === 'Enter' && !e.shiftKey) {
                             e.preventDefault();
@@ -674,7 +725,6 @@
             };
         })();
 
-        // بدء التطبيق عند اكتمال تحميل الـ DOM
         document.addEventListener('DOMContentLoaded', app.init);
     </script>
 </body>
