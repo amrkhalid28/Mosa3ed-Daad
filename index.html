@@ -355,10 +355,12 @@
             
             // محاولة قراءة الرد كـ JSON
             const text = await response.text();
+            console.log("Raw Response from Server:", text); // Debugging Log
+
             try {
                 return JSON.parse(text);
             } catch (e) {
-                // إذا كان الرد نصاً عادياً
+                // إذا كان الرد نصاً عادياً أو HTML (خطأ)
                 return text; 
             }
         }
@@ -420,23 +422,48 @@
                 }
 
                 // إرسال نوع الطلب (action: chat)
-                // نتوقع أن السكربت سيتعامل مع 'contents' ويرسله لـ Gemini
                 const data = await sendToBackend({ 
                     action: 'chat', 
                     contents: contents 
                 });
 
-                // معالجة الرد بافتراض هياكل مختلفة محتملة من Gemini أو السكربت
-                // 1. هيكل Gemini القياسي
-                let replyText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
-                
-                // 2. رد مباشر (string)
-                if (!replyText && typeof data === 'string') replyText = data;
-                
-                // 3. هيكل مبسط (إذا كان السكربت يبسط الرد)
-                if (!replyText && data?.text) replyText = data.text;
+                // --- تحسين معالجة الرد (Robust Error Handling) ---
+                let replyText = null;
 
-                return replyText || "عذراً، لم أستطع فهم الرد من الخادم.";
+                // 1. هيكل Gemini القياسي
+                if (data?.candidates?.[0]?.content?.parts?.[0]?.text) {
+                    replyText = data.candidates[0].content.parts[0].text;
+                }
+                
+                // 2. رد مباشر (نص)
+                else if (typeof data === 'string') {
+                    replyText = data;
+                }
+
+                // 3. هيكل مبسط (مثلاً: {text: "..."} أو {result: "..."})
+                else if (data?.text) {
+                    replyText = data.text;
+                }
+                else if (data?.result && typeof data.result === 'string') {
+                    replyText = data.result;
+                }
+
+                // 4. فحص وجود خطأ صريح من السكربت
+                else if (data?.error) {
+                    replyText = `⚠️ خطأ من السيرفر: ${JSON.stringify(data.error)}`;
+                }
+                else if (data?.message) {
+                    replyText = `⚠️ رسالة من السيرفر: ${data.message}`;
+                }
+
+                // 5. في حال وصول كائن JSON غير معروف (للـ Debugging)
+                if (!replyText && typeof data === 'object') {
+                    console.warn("Unknown response structure:", data);
+                    // نقوم بعرض الرد كما هو لنفهم المشكلة
+                    replyText = "⚠️ استجابة غير متوقعة: " + JSON.stringify(data);
+                }
+
+                return replyText || "عذراً، وصل رد فارغ من الخادم.";
 
             } catch (e) {
                 return `⚠️ خطأ اتصال: ${e.message}`;
