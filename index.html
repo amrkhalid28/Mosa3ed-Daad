@@ -145,11 +145,15 @@
 
     <script>
         // =================================================================
-        // تم تحديث متغيرات الاتصال - لا يتم استخدام مفتاح API في الواجهة
+        // تم تحديث الروابط لفصل التخزين عن المساعد الذكي
         // =================================================================
         const API_KEY = ""; 
         
-        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz25tq1H8CpbUcN6-JynGx-OLSzxDDRCJkF5RfCH4FfMKAYdOonHiYZLdXEaiV2X_kb_g/exec"; 
+        // رابط سكربت التخزين الأصلي (لـ handleClientInfoSubmit)
+        const STORAGE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbytnMAGBbWM_eSxUQxIqU6F7xUoxAH1P5olmGMER3YacoJRCmzX5L5_Wy4rVCLfVgsw/exec";
+        
+        // رابط سكربت المساعد الذكي الجديد (لـ callAssistant)
+        const ASSISTANT_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz25tq1H8CpbUcN6-JynGx-OLSzxDDRCJkF5RfCH4FfMKAYdOonHiYZLdXEaiV2X_kb_g/exec";
 
         const PROPOSAL_STORAGE_KEY = 'daad_proposal';
         const CLIENT_INFO_KEY = 'daad_client';
@@ -242,34 +246,23 @@
             const btn = document.getElementById('save-client-info-btn');
             btn.disabled = true; btn.textContent = 'جاري الحفظ...';
             
-            // LOGGING
-            console.log("Submitting Client Info to Proxy:", info);
+            console.log("Submitting Client Info to STORAGE script:", info);
 
             try {
-                // استخدام CORS وبوست للبروكسي
-                const resp = await fetch(GOOGLE_SCRIPT_URL, { 
+                // استعادة وظيفة التخزين للرابط الأصلي وبوضع no-cors
+                await fetch(STORAGE_SCRIPT_URL, { 
                     method: 'POST', 
-                    mode: 'cors', 
+                    mode: 'no-cors', 
                     headers: { 'Content-Type': 'application/json' }, 
                     body: JSON.stringify(info) 
                 });
-
-                if (!resp.ok) {
-                    const errText = await resp.text();
-                    console.error("Server Error on Info Submit:", resp.status, errText);
-                    throw new Error(`Server returned ${resp.status}`);
-                }
-
-                const resultText = await resp.text();
-                console.log("Client Info Saved Successfully:", resultText);
 
                 showMessage("تم الحفظ بنجاح!", "bg-highlight-green");
                 closeClientInfoModal();
                 if(isAssistantMode) setTimeout(() => openAiModal(true), 500);
             } catch(e) {
                 console.error("Save Client Info Failed:", e);
-                // رسالة واضحة للمستخدم
-                showMessage("تم الحفظ محلياً (فشل المزامنة)", "bg-highlight-orange");
+                showMessage("تم الحفظ محلياً", "bg-highlight-orange");
                 closeClientInfoModal();
                 if(isAssistantMode) setTimeout(() => openAiModal(true), 500);
             } finally {
@@ -277,7 +270,7 @@
             }
         }
 
-        // *** الاتصال المحدث عبر Proxy فقط ***
+        // *** الاتصال المحدث عبر Proxy المساعد فقط ***
         async function callAssistant(payload) {
             console.log("Preparing to call Assistant Proxy...", payload);
 
@@ -285,7 +278,8 @@
             const timeoutId = setTimeout(() => controller.abort(), 25000); // 25s timeout
 
             try {
-                const response = await fetch(GOOGLE_SCRIPT_URL, {
+                // استخدام رابط المساعد الجديد (ASSISTANT_SCRIPT_URL)
+                const response = await fetch(ASSISTANT_SCRIPT_URL, {
                     method: 'POST',
                     mode: 'cors',
                     headers: { 'Content-Type': 'application/json' },
@@ -295,39 +289,29 @@
                 
                 clearTimeout(timeoutId);
 
-                // فحص حالة الشبكة
                 if (!response.ok) {
                     const errText = await response.text();
                     console.error('Assistant proxy returned error', response.status, errText);
                     return `⚠️ خطأ من الخادم: ${response.status} - ${errText}`;
                 }
 
-                // قراءة الرد النصي
                 const responseText = await response.text();
-                console.log("Assistant Response (Raw):", responseText);
-
-                // محاولة تحليل JSON
+                
                 let data;
                 try {
                     data = JSON.parse(responseText);
                 } catch (e) {
-                    console.error("JSON Parse Error:", e);
-                    // إذا كان الرد نصاً عادياً نرجعه، وإلا نرجع رسالة خطأ
                     return responseText || "⚠️ وصل رد غير مفهوم من الخادم.";
                 }
 
-                // استخراج النص من بنية Gemini
                 let replyText = "";
                 if (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0]) {
                     replyText = data.candidates[0].content.parts[0].text;
                 } else if (data.text) {
-                     // fallback لبعض الهياكل الأخرى
                      replyText = data.text;
                 } else if (typeof data === 'string') {
-                     // في حال عاد النص مباشرة
                      replyText = data;
                 } else {
-                     // fallback أخير
                      replyText = JSON.stringify(data); 
                 }
                 
@@ -347,7 +331,6 @@
             const info = JSON.parse(localStorage.getItem(CLIENT_INFO_KEY) || '{}');
             addChatMsg("جاري تحليل البيانات...", 'bot', true);
             
-            // نرسل البايلود كما هو للبروكسي الذي سيتولى بناء الـ Prompt
             const reply = await callAssistant({ history: [], clientInfo: info, isFirstRun: true });
             removeLoading();
             addChatMsg(reply, 'bot');
