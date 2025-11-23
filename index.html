@@ -284,8 +284,11 @@
             const CONSTANTS = {
                 // الروابط المنفصلة للتخزين والذكاء الاصطناعي
                 URLS: {
+                    // 👇 ضع الرابط الجديد هنا 👇
                     STORAGE: "https://script.google.com/macros/s/AKfycbytnMAGBbWM_eSxUQxIqU6F7xUoxAH1P5olmGMER3YacoJRCmzX5L5_Wy4rVCLfVgsw/exec",
-                    ASSISTANT: "https://script.google.com/macros/s/AKfycbz25tq1H8CpbUcN6-JynGx-OLSzxDDRCJkF5RfCH4FfMKAYdOonHiYZLdXEaiV2X_kb_g/exec"
+                    
+                    // 👇 وضع الرابط الجديد هنا أيضاً (أو اتركهما مختلفين إذا كنت تستخدم سكربتين منفصلين) 👇
+                    ASSISTANT: "https://script.google.com/macros/s/AKfycbwhuHgYyCVAr5xzgsV2FmSvfxsvCZhFCxGRax4OWnSwkr5JOY8YKn-GL3IW8q0nsw-K-w/exec"
                 },
                 KEYS: {
                     PROPOSAL: 'daad_proposal_v2',
@@ -390,7 +393,7 @@
                 return fetch(CONSTANTS.URLS.STORAGE, { 
                     method: 'POST', 
                     mode: 'no-cors', 
-                    headers: { 'Content-Type': 'application/json' }, 
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' }, 
                     body: JSON.stringify(data) 
                 });
             }
@@ -400,10 +403,11 @@
                 const timeoutId = setTimeout(() => controller.abort(), CONSTANTS.TIMEOUT_MS);
 
                 try {
+                    // FIX: Change Content-Type to text/plain to avoid CORS preflight (OPTIONS) request failure
                     const response = await fetch(CONSTANTS.URLS.ASSISTANT, {
                         method: 'POST',
-                        mode: 'cors', // CORS ضروري لقراءة الرد من الـ AI
-                        headers: { 'Content-Type': 'application/json' },
+                        mode: 'cors',
+                        headers: { 'Content-Type': 'text/plain;charset=utf-8' }, 
                         body: JSON.stringify(payload),
                         signal: controller.signal
                     });
