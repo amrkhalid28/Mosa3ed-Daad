@@ -30,22 +30,12 @@
         .scrollbar-thin::-webkit-scrollbar-track { background-color: #3E0F1C; }
         input, textarea, select { background-color: #3E0F1C; color: #F2E8D8; border: 1px solid #501323; transition: border-color 0.2s; }
         input:focus, textarea:focus, select:focus { border-color: #D5C5A0; box-shadow: 0 0 0 2px rgba(213, 197, 160, 0.5); outline: none; }
-        
-        /* تحسين شكل الـ Checkbox */
-        input[type="checkbox"] { 
-            -webkit-appearance: none; appearance: none; 
-            width: 1.25rem; height: 1.25rem; 
-            border: 2px solid #D5C5A0; border-radius: 0.25rem; 
-            background-color: #3E0F1C; cursor: pointer; position: relative; 
-            display: inline-flex; align-items: center; justify-content: center;
-        }
+        input[type="checkbox"] { -webkit-appearance: none; appearance: none; width: 1.5rem; height: 1.5rem; border: 2px solid #D5C5A0; border-radius: 0.375rem; background-color: #3E0F1C; cursor: pointer; position: relative; }
         input[type="checkbox"]:checked { background-color: #D5C5A0; border-color: #D5C5A0; }
-        input[type="checkbox"]:checked::after { content: '✓'; color: #501323; font-size: 0.9rem; font-weight: 900; }
-        
+        input[type="checkbox"]:checked::after { content: '✓'; color: #501323; font-size: 1rem; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-weight: 900; }
         .logo-float { position: fixed; bottom: 20px; left: 20px; z-index: 50; cursor: pointer; border-radius: 9999px; transition: transform 0.3s, box-shadow 0.3s; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5); background-color: #3E0F1C; border: 3px solid #E0D6BC; width: 70px; height: 70px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
         .logo-float:hover { transform: scale(1.05); box-shadow: 0 8px 20px rgba(0, 0, 0, 0.7); }
         .logo-float img { width: 100%; height: 100%; object-fit: contain; border-radius: 9999px; }
-        
         .modal-backdrop { transition: opacity 0.3s ease; }
         .chat-log { height: 450px; }
         .chat-message { max-width: 85%; word-wrap: break-word; line-height: 1.7; font-size: 0.95rem; }
@@ -53,46 +43,24 @@
         .bot-message { background-color: #3E0F1C; color: #F2E8D8; border: 1px solid #501323; align-self: flex-end; }
         .bot-message ul { list-style: disc; padding-right: 20px; margin: 8px 0; }
         .bot-message strong { color: #D5C5A0; font-weight: 700; }
-        
         .loading-dots span { width: 8px; height: 8px; background-color: #D5C5A0; border-radius: 50%; display: inline-block; animation: bounce 1.4s infinite ease-in-out both; }
-        .loading-dots span:nth-child(1) { animation-delay: -0.32s; }
-        .loading-dots span:nth-child(2) { animation-delay: -0.16s; }
         @keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1.0); } }
-        
-        /* تحسينات الطباعة */
-        @media print { 
-            .no-print { display: none !important; } 
-            body { background-color: white !important; background-image: none !important; color: black !important; } 
-            .print-area { width: 100%; margin: 0; padding: 0; display: block !important; } 
-            .logo-float { display: none !important; }
-            .bg-dark-secondary { background-color: white !important; border: 1px solid #ccc !important; box-shadow: none !important; color: black !important; }
-            .text-accent-gold { color: #000 !important; text-decoration: underline; }
-            .text-text-light { color: #000 !important; }
-            input[type="checkbox"] { border-color: #000 !important; }
-            input[type="checkbox"]:checked { background-color: #000 !important; }
-            input[type="checkbox"]:checked::after { color: white !important; }
-            .page-break-inside-avoid { break-inside: avoid; page-break-inside: avoid; }
-        }
-        
-        /* Animation for details */
-        .fade-in { animation: fadeIn 0.3s ease-in; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+        @media print { .no-print { display: none !important; } body { background-color: #501323 !important; color: #F2E8D8 !important; -webkit-print-color-adjust: exact !important; } .print-area { width: 100%; margin: 0; padding: 20px; } .logo-float { display: none !important; } }
     </style>
 </head>
 <body class="text-text-light antialiased">
 
-    <!-- الشاشة الرئيسية -->
     <main id="home-view" class="min-h-screen w-full flex items-center justify-center p-4 transition-opacity duration-500 opacity-100">
         <div class="max-w-4xl mx-auto w-full">
-            <img src="https://i.ibb.co/fz5m8DNf/imgi-102-cropped-cropped-logo-daad-2000x2000-1-1-700x700-removebg-preview.png" alt="Daad Logo" class="h-24 w-auto rounded-lg shadow-md border border-accent-gold mx-auto mb-6 object-contain bg-dark-secondary/50 p-2" onerror="this.onerror=null; this.src='https://placehold.co/100x80/501323/D5C5A0?text=DAAD';">
+            <img src="https://i.ibb.co/fz5m8DNf/imgi-102-cropped-cropped-logo-daad-2000x2000-1-1-700x700-removebg-preview.png" alt="Daad Logo" class="h-20 w-auto rounded-lg shadow-md border border-accent-gold mx-auto mb-6" onerror="this.onerror=null; this.src='https://placehold.co/100x80/501323/D5C5A0?text=DAAD';">
             <h1 class="text-4xl font-bold text-accent-gold mb-4 text-center">أداة إنشاء العروض الفنية | Daad</h1>
             <p class="text-lg text-text-light/90 mb-12 text-center">ابدأ بتحديد الطريقة المفضلة لإنشاء الخطة.</p>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div onclick="selectAssistantMode()" class="md:col-span-2 bg-accent-gold text-dark-primary p-8 rounded-xl shadow-2xl transition-all duration-300 transform hover:scale-[1.02] cursor-pointer hover:shadow-accent-gold/20">
+                <div onclick="selectAssistantMode()" class="md:col-span-2 bg-accent-gold text-dark-primary p-8 rounded-xl shadow-2xl transition-all duration-300 transform hover:scale-[1.03] cursor-pointer">
                     <h2 class="text-3xl font-bold mb-3">الاستعانة بمساعد ض</h2>
-                    <p class="text-lg text-dark-primary/80 font-semibold">دع المستشار الذكي يحلل بيانات المشروع ويقترح خطة استراتيجية احترافية.</p>
+                    <p class="text-lg text-dark-primary/80">دع المستشار الذكي يحلل بيانات المشروع ويقترح خطة استراتيجية احترافية.</p>
                 </div>
-                <div onclick="selectManualMode()" class="md:col-span-1 bg-dark-secondary text-text-light p-8 rounded-xl shadow-xl border-2 border-accent-gold/50 transition-all duration-300 transform hover:scale-[1.02] cursor-pointer hover:border-accent-gold">
+                <div onclick="selectManualMode()" class="md:col-span-1 bg-dark-secondary text-text-light p-8 rounded-xl shadow-xl border-2 border-accent-gold/50 transition-all duration-300 transform hover:scale-[1.03] cursor-pointer">
                     <h2 class="text-3xl font-bold mb-3">البدء يدوياً</h2>
                     <p class="text-lg text-text-light/80">اختر الخدمات والأشهر بنفسك.</p>
                 </div>
@@ -100,153 +68,106 @@
         </div>
     </main>
 
-    <!-- نافذة بيانات العميل -->
-    <div id="client-info-modal" class="modal-backdrop fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-[100] opacity-0 pointer-events-none hidden" onclick="closeClientInfoModal()">
-        <div class="bg-dark-secondary rounded-xl shadow-2xl border border-accent-gold/50 max-w-3xl w-full p-6 transform transition-all" onclick="event.stopPropagation()">
-            <div class="flex justify-between items-center mb-4 border-b border-dark-primary pb-3">
+    <div id="client-info-modal" class="modal-backdrop fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-[100] opacity-0 pointer-events-none hidden" onclick="closeClientInfoModal()">
+        <div class="bg-dark-secondary rounded-xl shadow-2xl border border-accent-gold/50 max-w-3xl w-full p-6" onclick="event.stopPropagation()">
+            <div class="flex justify-between items-center mb-4">
                 <h2 class="text-2xl font-bold text-accent-gold">بيانات المشروع</h2>
-                <button onclick="closeClientInfoModal()" class="text-text-light/70 hover:text-accent-gold transition-colors text-2xl">&times;</button>
+                <button onclick="closeClientInfoModal()" class="text-text-light/70 hover:text-accent-gold transition-colors">✕</button>
             </div>
             <form id="client-info-form" class="space-y-4 max-h-[70vh] overflow-y-auto scrollbar-thin pr-2">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div><label class="block text-sm font-medium text-accent-gold mb-1">اسم المشروع *</label><input type="text" id="client-name" class="w-full p-3 rounded-lg border border-dark-primary outline-none focus:ring-1 focus:ring-accent-gold"></div>
+                    <div><label class="block text-sm font-medium text-accent-gold mb-1">اسم المشروع</label><input type="text" id="client-name" class="w-full p-3 rounded-lg border border-dark-primary outline-none"></div>
                     <div><label class="block text-sm font-medium text-accent-gold mb-1">رقم التواصل</label><input type="text" id="client-contact-phone" class="w-full p-3 rounded-lg border border-dark-primary outline-none"></div>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div><label class="block text-sm font-medium text-accent-gold mb-1">رابط المتجر/الموقع</label><input type="url" id="client-link" class="w-full p-3 rounded-lg border border-dark-primary outline-none"></div>
+                    <div><label class="block text-sm font-medium text-accent-gold mb-1">رابط المتجر</label><input type="url" id="client-link" class="w-full p-3 rounded-lg border border-dark-primary outline-none"></div>
                     <div><label class="block text-sm font-medium text-accent-gold mb-1">حسابات السوشيال</label><input type="text" id="client-social-links" class="w-full p-3 rounded-lg border border-dark-primary outline-none"></div>
                 </div>
-                <div><label class="block text-sm font-medium text-accent-gold mb-1">نوع النشاط</label><input type="text" id="client-business-type" class="w-full p-3 rounded-lg border border-dark-primary outline-none" placeholder="مثال: متجر عطور، شركة مقاولات..."></div>
+                <div><label class="block text-sm font-medium text-accent-gold mb-1">النشاط</label><input type="text" id="client-business-type" class="w-full p-3 rounded-lg border border-dark-primary outline-none"></div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div><label class="block text-sm font-medium text-accent-gold mb-1">الجمهور المستهدف</label><input type="text" id="client-target-audience" class="w-full p-3 rounded-lg border border-dark-primary outline-none"></div>
-                    <div><label class="block text-sm font-medium text-accent-gold mb-1">أبرز المنافسين</label><input type="text" id="client-competitors" class="w-full p-3 rounded-lg border border-dark-primary outline-none"></div>
+                    <div><label class="block text-sm font-medium text-accent-gold mb-1">الجمهور</label><input type="text" id="client-target-audience" class="w-full p-3 rounded-lg border border-dark-primary outline-none"></div>
+                    <div><label class="block text-sm font-medium text-accent-gold mb-1">المنافسين</label><input type="text" id="client-competitors" class="w-full p-3 rounded-lg border border-dark-primary outline-none"></div>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-medium text-accent-gold mb-1">الهدف الرئيسي</label>
-                        <select id="client-strategy-goal" class="w-full p-3 rounded-lg border border-dark-primary outline-none">
-                            <option value="زيادة المبيعات">زيادة المبيعات</option>
-                            <option value="الوعي بالعلامة">الوعي بالعلامة التجارية</option>
-                            <option value="إطلاق منتج جديد">إطلاق منتج جديد</option>
-                            <option value="تحسين الظهور الرقمي">تحسين الظهور الرقمي</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-accent-gold mb-1">الميزانية المتوقعة</label>
-                        <select id="client-budget-range" class="w-full p-3 rounded-lg border border-dark-primary outline-none">
-                            <option value="متوسطة">متوسطة</option>
-                            <option value="كبيرة">كبيرة (VIP)</option>
-                            <option value="محدودة">محدودة (Startup)</option>
-                        </select>
-                    </div>
+                    <div><label class="block text-sm font-medium text-accent-gold mb-1">الهدف</label><select id="client-strategy-goal" class="w-full p-3 rounded-lg border border-dark-primary outline-none"><option value="زيادة المبيعات">زيادة المبيعات</option><option value="الوعي بالعلامة">الوعي بالعلامة</option><option value="أخرى">أخرى</option></select></div>
+                    <div><label class="block text-sm font-medium text-accent-gold mb-1">الميزانية</label><select id="client-budget-range" class="w-full p-3 rounded-lg border border-dark-primary outline-none"><option value="متوسطة">متوسطة</option><option value="كبيرة">كبيرة</option></select></div>
                 </div>
-                <div><label class="block text-sm font-medium text-accent-gold mb-1">التحديات الحالية</label><textarea id="client-challenges" rows="2" class="w-full p-3 rounded-lg border border-dark-primary outline-none"></textarea></div>
-                <div><label class="block text-sm font-medium text-accent-gold mb-1">ملاحظات إضافية</label><textarea id="client-additional-info" rows="2" class="w-full p-3 rounded-lg border border-dark-primary outline-none"></textarea></div>
+                <div><label class="block text-sm font-medium text-accent-gold mb-1">التحديات</label><textarea id="client-challenges" rows="2" class="w-full p-3 rounded-lg border border-dark-primary outline-none"></textarea></div>
+                <div><label class="block text-sm font-medium text-accent-gold mb-1">ملاحظات</label><textarea id="client-additional-info" rows="2" class="w-full p-3 rounded-lg border border-dark-primary outline-none"></textarea></div>
                 
-                <button type="button" id="save-client-info-btn" onclick="handleClientInfoSubmit()" class="bg-accent-gold hover:bg-opacity-90 text-dark-primary font-bold py-3 px-6 rounded-xl shadow-lg w-full transition duration-300 mt-4">حفظ وبدء التحليل</button>
+                <button type="button" id="save-client-info-btn" onclick="handleClientInfoSubmit()" class="bg-accent-gold hover:bg-opacity-80 text-dark-primary font-bold py-3 px-6 rounded-xl shadow-lg w-full transition duration-300">حفظ وبدء التحليل مع مساعد ض</button>
             </form>
         </div>
     </div>
 
-    <!-- نافذة الشات (AI) -->
-    <div id="ai-modal" class="modal-backdrop fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-[100] opacity-0 pointer-events-none hidden" onclick="closeAiModal()">
+    <div id="ai-modal" class="modal-backdrop fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-[100] opacity-0 pointer-events-none hidden" onclick="closeAiModal()">
         <div class="bg-dark-secondary rounded-xl shadow-2xl border border-accent-gold/50 max-w-3xl w-full p-6 flex flex-col h-[85vh]" onclick="event.stopPropagation()">
             <div class="flex justify-between items-center mb-4 border-b border-dark-primary pb-3">
                 <div class="flex items-center">
-                    <div class="w-10 h-10 rounded-full bg-accent-gold flex items-center justify-center ml-3 text-dark-primary text-2xl border border-dark-primary shadow-inner">🤖</div>
-                    <div><h2 class="text-xl font-bold text-accent-gold">مساعد ض</h2><p class="text-xs text-text-light/60">مستشارك الاستراتيجي الذكي</p></div>
+                    <div class="w-10 h-10 rounded-full bg-accent-gold flex items-center justify-center ml-3 text-dark-primary">🤖</div>
+                    <div><h2 class="text-xl font-bold text-accent-gold">مساعد ض</h2><p class="text-xs text-text-light/60">مستشارك الذكي من شركة ضاد</p></div>
                 </div>
-                <button onclick="closeAiModal()" class="text-text-light/70 hover:text-accent-gold text-2xl">&times;</button>
+                <button onclick="closeAiModal()" class="text-text-light/70 hover:text-accent-gold">✕</button>
             </div>
-            <div id="chat-log" class="chat-log w-full flex-grow bg-dark-primary/30 rounded-lg p-4 overflow-y-auto scrollbar-thin flex flex-col space-y-4 mb-4 border border-dark-primary/50"></div>
+            <div id="chat-log" class="chat-log w-full flex-grow bg-dark-primary/30 rounded-lg p-4 overflow-y-auto scrollbar-thin flex flex-col space-y-4 mb-4"></div>
             <div class="relative pt-2 border-t border-dark-primary">
-                <textarea id="chat-input" rows="2" class="w-full p-4 pl-14 rounded-xl border border-dark-primary bg-dark-primary/50 focus:border-accent-gold outline-none resize-none text-text-light placeholder-text-light/30" placeholder="اكتب ردك هنا..."></textarea>
-                <button id="chat-send-btn" onclick="sendChatMessage()" class="absolute left-2 bottom-3 bg-accent-gold text-dark-primary w-10 h-10 flex items-center justify-center rounded-lg hover:bg-opacity-90 transition-colors shadow-lg">
-                    <svg class="w-5 h-5 transform rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
-                </button>
+                <textarea id="chat-input" rows="2" class="w-full p-4 pl-12 rounded-xl border border-dark-primary bg-dark-primary/50 focus:border-accent-gold outline-none resize-none" placeholder="اكتب ردك هنا..."></textarea>
+                <button id="chat-send-btn" onclick="sendChatMessage()" class="absolute left-2 bottom-2 bg-accent-gold text-dark-primary p-2 rounded-lg hover:bg-opacity-90"><svg class="w-5 h-5 transform rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg></button>
             </div>
         </div>
     </div>
 
-    <!-- واجهة التطبيق (الجدول) -->
     <div id="app-view" class="min-h-screen flex flex-col print-area hidden">
         <header class="sticky top-0 bg-dark-primary shadow-2xl p-4 z-20 no-print border-b border-dark-secondary">
             <div class="max-w-7xl mx-auto flex justify-between items-center">
                 <div class="flex items-center space-x-4 space-x-reverse">
-                    <img src="https://i.ibb.co/fz5m8DNf/imgi-102-cropped-cropped-logo-daad-2000x2000-1-1-700x700-removebg-preview.png" alt="Daad Logo" class="h-12 w-auto rounded-lg border border-accent-gold bg-dark-secondary p-1">
-                    <button onclick="openClientInfoModal()" class="bg-dark-secondary text-accent-gold hover:text-white hover:bg-dark-secondary/80 border border-accent-gold/30 font-bold py-2 px-4 rounded-xl shadow-lg text-sm transition-all">بيانات المشروع</button>
+                    <img src="https://i.ibb.co/fz5m8DNf/imgi-102-cropped-cropped-logo-daad-2000x2000-1-1-700x700-removebg-preview.png" alt="Daad Logo" class="h-10 w-auto rounded-lg shadow-md border border-accent-gold" onerror="this.onerror=null; this.src='https://placehold.co/100x40/501323/D5C5A0?text=DAAD';">
+                    <button onclick="openClientInfoModal()" class="bg-dark-secondary text-accent-gold font-bold py-2 px-4 rounded-xl shadow-lg text-sm">بيانات المشروع</button>
                 </div>
                 <div class="flex space-x-3 space-x-reverse">
-                    <button onclick="openAiModal()" class="bg-dark-secondary text-accent-gold hover:text-white border border-accent-gold/30 font-bold py-2 px-4 rounded-xl shadow-lg text-sm flex items-center gap-2 transition-all">
-                        <span>مساعد ض</span>
-                        <span class="text-lg">🤖</span>
-                    </button>
-                    <button onclick="generateTechnicalProposal()" class="bg-accent-gold text-dark-primary hover:bg-white font-bold py-2 px-6 rounded-xl shadow-lg text-sm transition-colors">طباعة / PDF</button>
+                    <button onclick="openAiModal()" class="bg-dark-secondary text-accent-gold font-bold py-2 px-4 rounded-xl shadow-lg text-sm">مساعد ض</button>
+                    <button onclick="generateTechnicalProposal()" class="bg-accent-gold text-dark-primary font-bold py-2 px-4 rounded-xl shadow-lg text-sm">طباعة</button>
                 </div>
             </div>
         </header>
-        
-        <main class="flex-grow max-w-7xl mx-auto w-full p-4 print:p-0">
-            <!-- رسائل النظام -->
-            <div id="system-message" class="fixed top-24 right-4 bg-accent-gold text-dark-primary p-4 rounded-xl shadow-2xl transition-all duration-500 opacity-0 transform translate-y-10 no-print z-50 font-bold border border-white/20"></div>
-            
-            <!-- شبكة الأشهر -->
-            <div id="months-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mt-8 print:grid-cols-2 print:gap-4"></div>
-            
-            <div class="flex justify-center mt-10 mb-10 no-print">
-                <button onclick="addNextMonth()" id="add-month-button" class="bg-highlight-green hover:bg-green-600 text-white font-bold py-3 px-8 rounded-xl shadow-lg transition-transform hover:scale-105 flex items-center gap-2">
-                    <span class="text-2xl">+</span> شهر جديد
-                </button>
+        <main class="flex-grow max-w-7xl mx-auto w-full p-4">
+            <div id="system-message" class="fixed top-20 right-4 bg-accent-gold text-dark-primary p-3 rounded-xl shadow-xl transition-all duration-300 opacity-0 transform translate-y-full no-print z-50"></div>
+            <div id="months-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 mt-8"></div>
+            <div class="flex justify-center mt-8 no-print">
+                <button onclick="addNextMonth()" id="add-month-button" class="bg-highlight-green text-dark-primary font-bold py-3 px-8 rounded-xl shadow-lg">+ شهر جديد</button>
             </div>
         </main>
     </div>
 
-    <a href="https://wa.me/+966592136734" target="_blank" class="logo-float no-print" title="تواصل معنا">
+    <a href="https://wa.me/+966592136734" target="_blank" class="logo-float no-print">
         <img src="https://i.ibb.co/fz5m8DNf/imgi-102-cropped-cropped-logo-daad-2000x2000-1-1-700x700-removebg-preview.png" onerror="this.onerror=null; this.src='https://placehold.co/70x70/501323/D5C5A0?text=DAAD';">
     </a>
 
     <script>
         // =================================================================
-        // إعدادات النظام
+        // تم تحديث متغيرات الاتصال - لا يتم استخدام مفتاح API في الواجهة
         // =================================================================
+        const API_KEY = ""; 
         
-        // الرابط المحدد للسكربت
-        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyrj9Umd1XWXG-BYVU6KVgYeVVB99w94Fn_Rw2g4HZSwr1YWjD9o0U7Sc8_9KAbhd2A/exec"; 
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz25tq1H8CpbUcN6-JynGx-OLSzxDDRCJkF5RfCH4FfMKAYdOonHiYZLdXEaiV2X_kb_g/exec"; 
+
         const PROPOSAL_STORAGE_KEY = 'daad_proposal';
         const CLIENT_INFO_KEY = 'daad_client';
         const MAX_MONTHS = 12;
-        
         let monthlySelections = [{}];
         let visibleMonths = 1;
         let chatHistory = [];
         let isAssistantMode = false;
-
-        const services = [
-            {id:'branding', name:'هوية بصرية'}, 
-            {id:'ui_ux', name:'UI/UX تصميم'}, 
-            {id:'salla_zid', name:'تأسيس متجر (سلة/زد)'}, 
-            {id:'wordpress', name:'موقع ووردبرس'},
-            {id:'social', name:'إدارة سوشيال ميديا'}, 
-            {id:'mb', name:'Media Buying (إعلانات)'}, 
-            {id:'seo', name:'SEO (محركات بحث)'},
-            {id:'cro', name:'CRO (تحسين التحويل)'}
+        let services = [
+            {id:'salla_zid', name:'انشاء سلة/زد'}, {id:'wordpress', name:'انشاء ووردبرس'},
+            {id:'ui_ux', name:'UI/UX'}, {id:'mb', name:'Media Buying'}, {id:'seo', name:'SEO'},
+            {id:'social', name:'Social Media'}, {id:'cro', name:'CRO'}, {id:'branding', name:'Branding'}
         ];
         
-        // التفاصيل التي ستظهر عند اختيار الخدمة
         const serviceCommitments = {
-             'branding': "شعار، دليل هوية، قرطاسية، وتطبيقات الهوية.",
-             'ui_ux': "تحليل تجربة المستخدم، تصميم واجهات، بروتوتايب.",
-             'salla_zid': "تجهيز، ربط دومين، إضافة منتجات، وربط خدمات.",
-             'wordpress': "برمجة خاصة أو قوالب، حماية، وسرعة.",
-             'social': "خطة محتوى، تصميمات، نشر، وجدولة.",
-             'mb': "خطة إعلانية، إطلاق حملات (سناب/تيك توك/انستا)، تقارير.",
-             'seo': "فحص تقني، تحسين داخلي (On-page)، وبناء روابط.",
-             'cro': "تحليل سلوك الزائر، اختبارات A/B، تحسين المبيعات."
+             'salla_zid': (i) => `<div class='service-commitment'><h2>تصميم متجر</h2><p>تحليل وتنفيذ وتسليم.</p></div>`,
+             'wordpress': (i) => `<div class='service-commitment'><h2>تصميم موقع</h2><p>تحليل وتنفيذ.</p></div>`,
         };
-
-        // =================================================================
-        // التحميل والتهيئة
-        // =================================================================
 
         function loadData() {
             try {
@@ -258,42 +179,29 @@
                 }
                 const info = JSON.parse(localStorage.getItem(CLIENT_INFO_KEY) || '{}');
                 if(info.name) {
-                    // تعبئة الحقول تلقائياً
-                    Object.keys(info).forEach(key => {
-                        const el = document.getElementById(`client-${key}`);
-                        if(el) el.value = info[key] || '';
-                    });
-                    // Mapping خاص لبعض الأسماء المختلفة في الـ ID
-                    if(info.phone) document.getElementById('client-contact-phone').value = info.phone;
-                    if(info.socials) document.getElementById('client-social-links').value = info.socials;
+                    document.getElementById('client-name').value = info.name;
+                    document.getElementById('client-contact-phone').value = info.phone || '';
+                    document.getElementById('client-link').value = info.link || '';
+                    document.getElementById('client-business-type').value = info.businessType || '';
+                    document.getElementById('client-target-audience').value = info.targetAudience || '';
+                    document.getElementById('client-strategy-goal').value = info.strategyGoal || '';
+                    document.getElementById('client-budget-range').value = info.budgetRange || '';
+                    document.getElementById('client-competitors').value = info.competitors || '';
+                    document.getElementById('client-social-links').value = info.socials || '';
+                    document.getElementById('client-challenges').value = info.challenges || '';
+                    document.getElementById('client-additional-info').value = info.additionalInfo || '';
                 }
-            } catch(e) { console.error("Error loading data", e); }
+            } catch(e) {}
         }
         
         function renderMonthsGrid() {
             const grid = document.getElementById('months-grid');
             grid.innerHTML = '';
             for(let i=0; i<visibleMonths; i++) {
-                let html = `<div class="bg-dark-secondary rounded-xl p-5 shadow-lg border border-accent-gold/30 page-break-inside-avoid transition-all hover:border-accent-gold/60">
-                            <h2 class="text-xl font-bold text-accent-gold mb-4 border-b border-dark-primary pb-2 flex justify-between">
-                                <span>الشهر ${i+1}</span>
-                                <span class="text-xs text-text-light/50 font-normal self-center">اختيارات: ${Object.keys(monthlySelections[i] || {}).length}</span>
-                            </h2>
-                            <div class="space-y-3">`;
-                
+                let html = `<div class="bg-dark-secondary rounded-xl p-6 shadow-lg border border-accent-gold/30"><h2 class="text-xl font-bold text-accent-gold mb-4 border-b border-dark-primary pb-2">الشهر ${i+1}</h2><div class="space-y-2">`;
                 services.forEach(s => {
                     const checked = monthlySelections[i] && monthlySelections[i][s.id];
-                    const desc = serviceCommitments[s.id] || '';
-                    
-                    // عرض الخدمة + التفاصيل عند التحديد
-                    html += `
-                    <div class="flex flex-col group">
-                        <div class="flex items-center mb-1">
-                            <input type="checkbox" ${checked?'checked':''} onchange="updateSelection(${i},'${s.id}',this.checked)" class="transition-transform transform active:scale-90">
-                            <span class="text-text-light font-bold mr-2 cursor-pointer select-none ${checked ? 'text-accent-gold' : 'group-hover:text-white'}" onclick="this.previousElementSibling.click()">${s.name}</span>
-                        </div>
-                        ${checked ? `<p class="text-xs text-text-light/70 mr-7 fade-in border-r-2 border-accent-gold pr-2 leading-relaxed">${desc}</p>` : ''}
-                    </div>`;
+                    html += `<div class="flex items-center"><input type="checkbox" ${checked?'checked':''} onchange="updateSelection(${i},'${s.id}',this.checked)" class="w-5 h-5 ml-2"><span class="text-text-light">${s.name}</span></div>`;
                 });
                 html += `</div></div>`;
                 grid.innerHTML += html;
@@ -307,15 +215,7 @@
             renderMonthsGrid();
         }
 
-        function addNextMonth() { 
-            if(visibleMonths < MAX_MONTHS) { 
-                visibleMonths++; 
-                monthlySelections.push({}); 
-                renderMonthsGrid(); 
-                // Scroll to bottom
-                window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-            } 
-        }
+        function addNextMonth() { if(visibleMonths < MAX_MONTHS) { visibleMonths++; monthlySelections.push({}); renderMonthsGrid(); } }
 
         function getClientInfo() {
             return {
@@ -334,168 +234,131 @@
             };
         }
 
-        // =================================================================
-        // الاتصال بالخادم (Google Apps Script)
-        // =================================================================
-
-        /**
-         * دالة موحدة للإرسال لتفادي مشاكل الـ CORS وتوحيد الهيكل
-         * تستخدم text/plain لتجنب Preflight Request (OPTIONS)
-         */
-        async function sendToBackend(payload) {
-            // نغلف البيانات بـ stringify ونرسلها كنص عادي
-            const response = await fetch(GOOGLE_SCRIPT_URL, {
-                method: "POST",
-                mode: "cors", // استخدام no-cors سيخفي الرد، لذا نستخدم cors مع text/plain
-                headers: { "Content-Type": "text/plain;charset=utf-8" }, 
-                body: JSON.stringify(payload)
-            });
-            
-            if (!response.ok) throw new Error(`Server Error: ${response.status}`);
-            
-            // محاولة قراءة الرد كـ JSON
-            const text = await response.text();
-            console.log("Raw Response from Server:", text); // Debugging Log
-
-            try {
-                return JSON.parse(text);
-            } catch (e) {
-                // إذا كان الرد نصاً عادياً أو HTML (خطأ)
-                return text; 
-            }
-        }
-
         async function handleClientInfoSubmit() {
             const info = getClientInfo();
-            if(!info.name) {
-                showMessage("الرجاء إدخال اسم المشروع على الأقل", "bg-red-600");
-                return;
-            }
+            if(!info.name) return alert("الاسم مطلوب");
             
             localStorage.setItem(CLIENT_INFO_KEY, JSON.stringify(info));
             const btn = document.getElementById('save-client-info-btn');
-            const originalText = btn.textContent;
-            btn.disabled = true; btn.textContent = 'جاري الاتصال بالخادم...';
+            btn.disabled = true; btn.textContent = 'جاري الحفظ...';
+            
+            // LOGGING
+            console.log("Submitting Client Info to Proxy:", info);
 
             try {
-                // إرسال نوع الطلب (action: save_client)
-                const res = await sendToBackend({ action: 'save_client', data: info });
-                
-                showMessage("تم حفظ البيانات بنجاح!", "bg-highlight-green");
-                closeClientInfoModal();
-                
-                // إذا كنا في وضع المساعد، نفتح الشات تلقائياً
-                if(isAssistantMode) setTimeout(() => openAiModal(true), 500);
+                // استخدام CORS وبوست للبروكسي
+                const resp = await fetch(GOOGLE_SCRIPT_URL, { 
+                    method: 'POST', 
+                    mode: 'cors', 
+                    headers: { 'Content-Type': 'application/json' }, 
+                    body: JSON.stringify(info) 
+                });
 
+                if (!resp.ok) {
+                    const errText = await resp.text();
+                    console.error("Server Error on Info Submit:", resp.status, errText);
+                    throw new Error(`Server returned ${resp.status}`);
+                }
+
+                const resultText = await resp.text();
+                console.log("Client Info Saved Successfully:", resultText);
+
+                showMessage("تم الحفظ بنجاح!", "bg-highlight-green");
+                closeClientInfoModal();
+                if(isAssistantMode) setTimeout(() => openAiModal(true), 500);
             } catch(e) {
-                console.error(e);
-                showMessage("تم الحفظ محلياً (فشل الاتصال بالسيرفر).", "bg-highlight-orange");
+                console.error("Save Client Info Failed:", e);
+                // رسالة واضحة للمستخدم
+                showMessage("تم الحفظ محلياً (فشل المزامنة)", "bg-highlight-orange");
                 closeClientInfoModal();
                 if(isAssistantMode) setTimeout(() => openAiModal(true), 500);
             } finally {
-                btn.disabled = false; btn.textContent = originalText;
+                btn.disabled = false; btn.textContent = 'حفظ وبدء التحليل مع مساعد ض';
             }
         }
 
+        // *** الاتصال المحدث عبر Proxy فقط ***
         async function callAssistant(payload) {
+            console.log("Preparing to call Assistant Proxy...", payload);
+
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 25000); // 25s timeout
+
             try {
-                // بناء السياق (Prompt) هنا
-                const systemPrompt = `
-                    أنت "مساعد ضاد"، المستشار الذكي لشركة "ضاد" (Daad) المتخصصة في التسويق الرقمي والبرمجة.
-                    هدف الشركة: مساعدة العملاء على النمو من خلال حلول تقنية وتسويقية.
-                    
-                    بيانات العميل الحالية: ${JSON.stringify(payload.clientInfo)}
-                    
-                    تعليماتك:
-                    1. كن ودوداً، محترفاً، وتحدث باللهجة السعودية البيضاء الراقية.
-                    2. قدم نصائح بناءً على "الخدمات المتاحة" (SEO, Ads, Branding, Websites).
-                    3. لا تخترع خدمات غير موجودة في القائمة.
-                    4. إذا كان العميل جديداً، رحب به باسمه واقترح خطة مبدئية بناءً على هدفه.
-                    5. اجعل ردودك مختصرة ومقسمة لنقاط لتسهيل القراءة.
-                `;
-
-                let contents = [{ role: "user", parts: [{ text: systemPrompt }] }];
-                
-                // إضافة سجل المحادثة
-                if (payload.history && payload.history.length > 0) {
-                    contents = contents.concat(payload.history);
-                }
-
-                // إرسال نوع الطلب (action: chat)
-                const data = await sendToBackend({ 
-                    action: 'chat', 
-                    contents: contents 
+                const response = await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload),
+                    signal: controller.signal
                 });
+                
+                clearTimeout(timeoutId);
 
-                // --- تحسين معالجة الرد (Robust Error Handling) ---
-                let replyText = null;
+                // فحص حالة الشبكة
+                if (!response.ok) {
+                    const errText = await response.text();
+                    console.error('Assistant proxy returned error', response.status, errText);
+                    return `⚠️ خطأ من الخادم: ${response.status} - ${errText}`;
+                }
 
-                // 1. هيكل Gemini القياسي
-                if (data?.candidates?.[0]?.content?.parts?.[0]?.text) {
+                // قراءة الرد النصي
+                const responseText = await response.text();
+                console.log("Assistant Response (Raw):", responseText);
+
+                // محاولة تحليل JSON
+                let data;
+                try {
+                    data = JSON.parse(responseText);
+                } catch (e) {
+                    console.error("JSON Parse Error:", e);
+                    // إذا كان الرد نصاً عادياً نرجعه، وإلا نرجع رسالة خطأ
+                    return responseText || "⚠️ وصل رد غير مفهوم من الخادم.";
+                }
+
+                // استخراج النص من بنية Gemini
+                let replyText = "";
+                if (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0]) {
                     replyText = data.candidates[0].content.parts[0].text;
+                } else if (data.text) {
+                     // fallback لبعض الهياكل الأخرى
+                     replyText = data.text;
+                } else if (typeof data === 'string') {
+                     // في حال عاد النص مباشرة
+                     replyText = data;
+                } else {
+                     // fallback أخير
+                     replyText = JSON.stringify(data); 
                 }
                 
-                // 2. رد مباشر (نص)
-                else if (typeof data === 'string') {
-                    replyText = data;
-                }
+                return replyText;
 
-                // 3. هيكل مبسط (مثلاً: {text: "..."} أو {result: "..."})
-                else if (data?.text) {
-                    replyText = data.text;
+            } catch(e) {
+                clearTimeout(timeoutId);
+                console.error("Call Assistant Exception:", e);
+                if (e.name === 'AbortError') {
+                    return '⚠️ تم إلغاء الطلب (timeout).';
                 }
-                else if (data?.result && typeof data.result === 'string') {
-                    replyText = data.result;
-                }
-
-                // 4. فحص وجود خطأ صريح من السكربت
-                else if (data?.error) {
-                    replyText = `⚠️ خطأ من السيرفر: ${JSON.stringify(data.error)}`;
-                }
-                else if (data?.message) {
-                    replyText = `⚠️ رسالة من السيرفر: ${data.message}`;
-                }
-
-                // 5. في حال وصول كائن JSON غير معروف (للـ Debugging)
-                if (!replyText && typeof data === 'object') {
-                    console.warn("Unknown response structure:", data);
-                    // نقوم بعرض الرد كما هو لنفهم المشكلة
-                    replyText = "⚠️ استجابة غير متوقعة: " + JSON.stringify(data);
-                }
-
-                return replyText || "عذراً، وصل رد فارغ من الخادم.";
-
-            } catch (e) {
                 return `⚠️ خطأ اتصال: ${e.message}`;
             }
         }
 
-        // =================================================================
-        // منطق واجهة المستخدم (UI Logic)
-        // =================================================================
-
         async function triggerAssistantAnalysis() {
             const info = JSON.parse(localStorage.getItem(CLIENT_INFO_KEY) || '{}');
-            addChatMsg("جاري تحليل بياناتك واقتراح خطة...", 'bot', true);
+            addChatMsg("جاري تحليل البيانات...", 'bot', true);
             
+            // نرسل البايلود كما هو للبروكسي الذي سيتولى بناء الـ Prompt
             const reply = await callAssistant({ history: [], clientInfo: info, isFirstRun: true });
             removeLoading();
             addChatMsg(reply, 'bot');
-            
-            if(!reply.startsWith('⚠️')) {
-                chatHistory.push({role: 'model', parts: [{text: reply}]});
-            }
+            if(!reply.startsWith('⚠️')) chatHistory.push({role: 'model', parts: [{text: reply}]});
         }
 
         async function sendChatMessage() {
-            const inputEl = document.getElementById('chat-input');
-            const txt = inputEl.value.trim();
+            const txt = document.getElementById('chat-input').value;
             if(!txt) return;
-            
             addChatMsg(txt, 'user');
-            inputEl.value = '';
-            
-            // إضافة رسالة المستخدم للتاريخ
+            document.getElementById('chat-input').value = '';
             chatHistory.push({role: 'user', parts: [{text: txt}]});
             
             const info = JSON.parse(localStorage.getItem(CLIENT_INFO_KEY) || '{}');
@@ -504,78 +367,36 @@
             const reply = await callAssistant({ history: chatHistory, clientInfo: info });
             removeLoading();
             addChatMsg(reply, 'bot');
-            
-            if(!reply.startsWith('⚠️')) {
-                chatHistory.push({role: 'model', parts: [{text: reply}]});
-            }
+            if(!reply.startsWith('⚠️')) chatHistory.push({role: 'model', parts: [{text: reply}]});
         }
 
         function addChatMsg(txt, sender, isLoading) {
             const div = document.createElement('div');
-            div.className = `chat-message p-4 rounded-xl shadow-sm mb-3 fade-in ${sender==='user'?'user-message rounded-bl-none':'bot-message rounded-br-none'}`;
-            
+            div.className = `chat-message p-4 rounded-xl shadow-sm mb-2 ${sender==='user'?'user-message rounded-bl-none':'bot-message rounded-br-none'}`;
             if(isLoading) {
                 div.id = "loading-msg";
-                div.innerHTML = `<div class="loading-dots gap-1 flex"><span></span><span></span><span></span></div>`;
+                div.innerHTML = `<div class="loading-dots"><span></span><span></span><span></span></div>`;
             } else {
-                // تحسين تنسيق النص (Markdown بسيط)
-                let formatted = txt
-                    .replace(/</g, "&lt;").replace(/>/g, "&gt;") // حماية من HTML Injection
-                    .replace(/\*\*(.*?)\*\*/g, '<strong class="text-accent-gold">$1</strong>') // Bold
-                    .replace(/\*(.*?)\*/g, '<em>$1</em>') // Italic
-                    .replace(/^- (.*)/gm, '<ul class="list-disc pr-5"><li>$1</li></ul>') // Lists
-                    .replace(/\n/g, '<br>');
-                div.innerHTML = formatted;
+                div.innerHTML = txt.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
             }
-            
-            const log = document.getElementById('chat-log');
-            log.appendChild(div);
-            log.scrollTop = log.scrollHeight; // Scroll to bottom
+            document.getElementById('chat-log').appendChild(div);
+            document.getElementById('chat-log').scrollTop = 99999;
         }
-
         function removeLoading() { const l = document.getElementById('loading-msg'); if(l) l.remove(); }
-        
-        function showMessage(msg, bgClass) {
-            const el = document.getElementById('system-message'); 
-            el.textContent = msg; 
-            el.className = `fixed top-24 right-4 p-4 rounded-xl shadow-xl z-50 text-white font-bold ${bgClass}`;
-            el.classList.remove('translate-y-10', 'opacity-0'); 
-            setTimeout(() => el.classList.add('translate-y-10', 'opacity-0'), 3000);
+        function showMessage(msg, bg) {
+            const el = document.getElementById('system-message'); el.textContent = msg; el.className = `fixed top-20 right-4 p-3 rounded-xl shadow-xl z-50 ${bg}`;
+            el.classList.remove('translate-y-full', 'opacity-0'); setTimeout(() => el.classList.add('translate-y-full', 'opacity-0'), 3000);
         }
-
         function openAiModal(auto) {
             document.getElementById('ai-modal').classList.remove('hidden', 'opacity-0', 'pointer-events-none');
-            if(auto && chatHistory.length === 0) {
-                triggerAssistantAnalysis();
-            } else if (!auto && document.getElementById('chat-log').children.length === 0) {
-                addChatMsg("حياك الله، أنا مساعد ض. كيف أقدر أساعدك في تخطيط مشروعك اليوم؟", 'bot');
-            }
+            if(!auto && document.getElementById('chat-log').children.length === 0) addChatMsg("حياك الله، أنا مساعد ض.", 'bot');
+            if(auto) triggerAssistantAnalysis();
         }
-        
-        function closeAiModal() { 
-            document.getElementById('ai-modal').classList.add('opacity-0', 'pointer-events-none'); 
-            setTimeout(()=>document.getElementById('ai-modal').classList.add('hidden'),300); 
-        }
-        
+        function closeAiModal() { document.getElementById('ai-modal').classList.add('opacity-0', 'pointer-events-none'); setTimeout(()=>document.getElementById('ai-modal').classList.add('hidden'),300); }
         function openClientInfoModal() { document.getElementById('client-info-modal').classList.remove('hidden', 'opacity-0', 'pointer-events-none'); }
-        
-        function closeClientInfoModal() { 
-            document.getElementById('client-info-modal').classList.add('opacity-0', 'pointer-events-none'); 
-            setTimeout(()=>document.getElementById('client-info-modal').classList.add('hidden'),300); 
-        }
-        
-        function selectManualMode() { 
-            document.getElementById('home-view').classList.add('hidden'); 
-            document.getElementById('app-view').classList.remove('hidden'); 
-            window.scrollTo(0,0);
-        }
-        
-        function selectAssistantMode() { 
-            isAssistantMode = true; 
-            selectManualMode(); 
-            openClientInfoModal(); 
-        }
-        
+        function closeClientInfoModal() { document.getElementById('client-info-modal').classList.add('opacity-0', 'pointer-events-none'); setTimeout(()=>document.getElementById('client-info-modal').classList.add('hidden'),300); }
+        function selectManualMode() { document.getElementById('home-view').classList.add('hidden'); document.getElementById('app-view').classList.remove('hidden'); }
+        function selectAssistantMode() { isAssistantMode = true; selectManualMode(); openClientInfoModal(); }
         function generateTechnicalProposal() { window.print(); }
 
         window.onload = function() { loadData(); renderMonthsGrid(); };
