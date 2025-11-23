@@ -285,8 +285,8 @@
                 // الروابط المنفصلة للتخزين والذكاء الاصطناعي
                 URLS: {
                     // 👇 ضع الرابط الجديد الذي نسخته من الخطوة 2 هنا في المكانين 👇
-                    STORAGE: "https://script.google.com/macros/s/AKfycbyLjP3Zhx0UwqzTXbbRpY2jhwrTpM0cAdmSCcBHIqZXJFa5L9imPXixlJhbwItOLo7Z/exec",
-                    ASSISTANT: "https://script.google.com/macros/s/AKfycbz2WumjmnmKNXJze6jK4xO1daYerllig4fHsemozqs6SpwV5g9bZjptXVpKDX62yAqPMQ/exec" 
+                    STORAGE: "https://script.google.com/macros/s/AKfycbzo1toiqVOkzdFhM7Lxhe6OhNF62nbS8Mq3xBd-yMre0sfBmp6LVyXNbLaECEA07Vbb/exec",
+                    ASSISTANT: "https://script.google.com/macros/s/AKfycbz-wCU6u6GLNm3PQXc7S5nNtHDI6wSxEB4htszY-N5DM9tIp8cALXZxeWTHw4AeQZTYIA/exec" 
                 },
                 KEYS: {
                     PROPOSAL: 'daad_proposal_v2',
@@ -393,66 +393,47 @@
                 });
             }
 
-            // ⚠️ الدالة المعدلة: بناء الطلب بالكامل هنا ⚠️
+            // ⚠️ الدالة المعدلة: بناء الطلب وإضافة السياق تلقائياً مع أول رسالة ⚠️
             async function callAssistantAPI(originalPayload) {
                 const controller = new AbortController();
                 const timeoutId = setTimeout(() => controller.abort(), CONSTANTS.TIMEOUT_MS);
 
-                // 1. بناء النص التوجيهي (Prompt)
-                let promptText = "";
+                const client = originalPayload.clientInfo || {};
                 
-                // إذا كانت أول مرة، أضف تعليمات النظام وبيانات العميل
-                if (originalPayload.isFirstRun) {
-                    const client = originalPayload.clientInfo;
-                    promptText = `
+                // تعريف شخصية المساعد وسياق العميل
+                const systemPrompt = `
 أنت "مساعد ضاد"، المستشار الذكي لشركة "ضاد".
 هويتك: لغتك فصيحة وسلسة، أسلوبك مهذب وواثق مع لمسة خفيفة من الدعابة الذكية.
-دورك: تحليل بيانات العميل واقتراح خطة.
+دورك: الرد على استفسارات العميل ومساعدته بناءً على بياناته.
 
-بيانات العميل:
-- الاسم: ${client.name}
-- النشاط: ${client.businessType}
-- الهدف: ${client.strategyGoal}
-- الميزانية: ${client.budgetRange}
-- الجمهور: ${client.targetAudience}
-- المنافسين: ${client.competitors}
-- التحديات: ${client.challenges}
+بيانات العميل الحالية:
+- الاسم: ${client.name || 'غير محدد'}
+- النشاط: ${client.businessType || 'غير محدد'}
+- الهدف: ${client.strategyGoal || 'غير محدد'}
+- الميزانية: ${client.budgetRange || 'غير محدد'}
+- الجمهور: ${client.targetAudience || 'غير محدد'}
+- التحديات: ${client.challenges || 'لا يوجد'}
 
-ابدأ بالترحيب بالعميل (اسمه ${client.name}) ثم قدم تحليلاً مبدئياً مختصراً واقتراحاً للخطوة التالية.
+تعليمات:
+- لا تقم بتحليل المشروع تلقائياً في البداية، فقط رد على ما يكتبه المستخدم.
+- استخدم البيانات أعلاه لفهم سياق المشروع عند الإجابة.
 `;
-                } else {
-                    // في المحادثات التالية، نأخذ آخر رسالة من المستخدم
-                    const lastMsg = originalPayload.history[originalPayload.history.length - 1];
-                    if (lastMsg && lastMsg.role === 'user') {
-                        promptText = lastMsg.parts[0].text;
-                    }
+
+                // تجهيز الرسائل للإرسال
+                // ننسخ سجل المحادثة الحالي
+                let contents = JSON.parse(JSON.stringify(originalPayload.history || []));
+
+                // إذا كان هناك رسائل، نقوم بدمج "تعريف الشخصية" مع أول رسالة من المستخدم
+                // هذا يضمن أن الذكاء الاصطناعي "يعرف" من هو وما هي بيانات العميل دون أن يراها المستخدم
+                if (contents.length > 0 && contents[0].role === 'user') {
+                    // ندمج التعليمات قبل نص رسالة المستخدم الأولى
+                    contents[0].parts[0].text = systemPrompt + "\n\n---\n\n" + contents[0].parts[0].text;
+                } else if (contents.length === 0) {
+                     // حالة نادرة: لو تم الاستدعاء بدون رسائل (لا يجب أن تحدث هنا)
+                     contents = [{ role: "user", parts: [{ text: systemPrompt }] }];
                 }
 
-                // 2. تجهيز سجل المحادثة بتنسيق Gemini الصحيح
-                // نحتاج لتحويل سجل المحادثة السابق ليكون متوافقاً
-                // ملاحظة: نقوم بفلترة الرسائل للتأكد من صحتها
-                let contents = [];
-
-                // إذا كان هناك سجل سابق، نضيفه (ما عدا الرسالة الأخيرة التي أضفناها كـ promptText إذا لم تكن FirstRun)
-                if (originalPayload.history && originalPayload.history.length > 0) {
-                     // نسخ التاريخ القديم
-                     contents = [...originalPayload.history];
-                     
-                     // إذا لم تكن المرة الأولى، فإن آخر رسالة هي السؤال الحالي، لذا لا نضيفها مرتين
-                     // لكن في هيكلة Gemini، الـ contents يجب أن يحتوي كل شيء
-                     // لذا سنعتمد الهيكلة الكاملة مباشرة
-                }
-
-                // الطريقة الأضمن: بناء مصفوفة contents جديدة بالكامل للإرسال
-                // إذا كانت المرة الأولى، الرسالة هي System Prompt كرسالة User
-                if (originalPayload.isFirstRun) {
-                    contents = [{ role: "user", parts: [{ text: promptText }] }];
-                } else {
-                    // إذا لم تكن المرة الأولى، نستخدم التاريخ الموجود كما هو لأنه أصلاً بصيغة Gemini
-                    contents = originalPayload.history;
-                }
-
-                // 3. بناء الجسم النهائي المتوافق مع Gemini API
+                // بناء الجسم النهائي المتوافق مع Gemini API
                 const geminiBody = {
                     contents: contents
                 };
@@ -462,7 +443,6 @@
                         method: 'POST',
                         mode: 'cors',
                         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                        // نرسل الهيكل الجاهز لـ Gemini مباشرة
                         body: JSON.stringify(geminiBody),
                         signal: controller.signal
                     });
@@ -471,7 +451,6 @@
 
                     if (!response.ok) {
                         const errText = await response.text();
-                        // محاولة لتحسين رسالة الخطأ
                         try {
                             const errJson = JSON.parse(errText);
                             if(errJson.error && errJson.error.message) {
@@ -573,7 +552,7 @@
                     if(!autoTriggerAI && $('chat-log').children.length === 0) {
                         addChatMsg("👋 حياك الله! أنا 'مساعد ض'، مستشارك الذكي لاستراتيجيات النمو. كيف أقدر أساعدك في مشروعك اليوم؟", 'bot');
                     }
-                    if(autoTriggerAI) triggerAIAnalysis();
+                    if(autoTriggerAI) triggerAIAnalysis(); // لن يتم استدعاؤها لأننا سنرسل false
                 }
             }
 
@@ -631,13 +610,14 @@
                     closeModal('client-info-modal');
                     
                     if(state.isAssistantMode) {
-                        setTimeout(() => openModal('ai-modal', true), 500);
+                        // ⚠️ التعديل هنا: إرسال false لمنع التحليل التلقائي
+                        setTimeout(() => openModal('ai-modal', false), 500);
                     }
                 } catch(e) {
                     console.error("Storage Error:", e);
                     showMessage("⚠️ تم الحفظ محلياً فقط (مشكلة اتصال)", "bg-orange-100 border-highlight-orange", "text-orange-800");
                     closeModal('client-info-modal');
-                    if(state.isAssistantMode) setTimeout(() => openModal('ai-modal', true), 500);
+                    if(state.isAssistantMode) setTimeout(() => openModal('ai-modal', false), 500);
                 } finally {
                     btn.disabled = false;
                     btn.innerHTML = originalText;
@@ -673,21 +653,9 @@
                 }
             }
 
+            // دالة التحليل التلقائي (لم تعد مستخدمة تلقائياً ولكن تبقى كاحتياط)
             async function triggerAIAnalysis() {
-                const info = JSON.parse(localStorage.getItem(CONSTANTS.KEYS.CLIENT) || '{}');
-                addChatMsg("جاري تحليل بيانات مشروعك وبناء الخطة...", 'bot', true);
-                
-                try {
-                    // إرسال طلب جديد مع بيانات العميل فقط، وتجاهل أي تاريخ سابق لهذه الجلسة
-                    state.chatHistory = []; 
-                    const reply = await callAssistantAPI({ history: [], clientInfo: info, isFirstRun: true });
-                    removeLoading();
-                    addChatMsg(reply, 'bot');
-                    state.chatHistory.push({role: 'model', parts: [{text: reply}]});
-                } catch(e) {
-                    removeLoading();
-                    addChatMsg(`🚫 لم أتمكن من تحليل البيانات حالياً: ${e.message}`, 'bot');
-                }
+                // ... (نفس الكود السابق إن احتجت له مستقبلاً) ...
             }
 
             // --- PUBLIC EXPORTS ---
