@@ -149,10 +149,8 @@
 
     <script>
         // =================================================================
-        // ⚠️ تأكد من عدم وضع أي مفتاح API هنا! ⚠️
+        // ⚠️ إعدادات الاتصال (البروكسي) ⚠️
         // =================================================================
-        const API_KEY = ""; // اتركها فارغة
-        
         const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyrj9Umd1XWXG-BYVU6KVgYeVVB99w94Fn_Rw2g4HZSwr1YWjD9o0U7Sc8_9KAbhd2A/exec"; 
 
         const PROPOSAL_STORAGE_KEY = 'daad_proposal';
@@ -247,26 +245,12 @@
             btn.disabled = true; btn.textContent = 'جاري الحفظ...';
 
             try {
-                // إرسال البيانات إلى Google Apps Script باستخدام mode no-cors
-                await fetch(GOOGLE_SCRIPT_URL, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(info)
-                });
-                
+                await fetch(GOOGLE_SCRIPT_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(info) });
                 showMessage("تم الحفظ بنجاح!", "bg-highlight-green");
                 closeClientInfoModal();
-                
-                // الانتقال للمساعد
-                if(isAssistantMode) {
-                    setTimeout(() => openAiModal(true), 500);
-                }
-
+                if(isAssistantMode) setTimeout(() => openAiModal(true), 500);
             } catch(e) {
-                console.error(e);
-                // في حالة الخطأ، نستمر أيضاً لأن الحفظ المحلي تم
-                showMessage("تم الحفظ محلياً (خطأ في الاتصال بالشيت)", "bg-highlight-orange");
+                showMessage("تم الحفظ محلياً", "bg-highlight-orange");
                 closeClientInfoModal();
                 if(isAssistantMode) setTimeout(() => openAiModal(true), 500);
             } finally {
@@ -274,54 +258,58 @@
             }
         }
 
-        // *** الاتصال المباشر (Client-Side Fetch) - المدرع ***
+        // ----------------------------------
+        //    الاتصال بالـ AI عبر Web App Proxy
+        // ----------------------------------
         async function callAssistant(payload) {
             try {
+                // تأكد إن رابط الـ Web App موجود
                 if (!GOOGLE_SCRIPT_URL) {
-                    return "⚠️ خطأ: لم يتم ضبط رابط الـ Google Apps Script (GOOGLE_SCRIPT_URL).";
+                    return "⚠️ خطأ: رابط Google Apps Script غير موجود.";
                 }
 
+                // الشخصية + البيانات التي تُرسل للذكاء الاصطناعي
                 const systemPrompt = `
-                    أنت "مساعد ض" (Daad Assistant)، المستشار الذكي لشركة "ضاد".
-                    هويتك: لغتك فصيحة وسلسة، أسلوبك مهذب وواثق مع لمسة خفيفة من الدعابة الذكية.
-                    الدور الأساسي: تساعد العميل يفهم، يختار، ويتخذ قرار… بدون ضغط، بأسلوب مقنع وعملي.
-                    
-                    قواعد الرد:
-                    1. تكلم بعربية فصحى بسيطة أو لهجة سعودية بيضاء، بأسلوب محترم واحترافي دائماً.
-                    2. كن صريحاً ومباشراً، وقدم إجابات مرتبة (الفكرة -> السبب -> الحل).
-                    3. كن تحليلياً: اسحب النقاط المهمة من كلام العميل ورد عليها.
-                    4. كن مطمئناً وهادئاً، واذكر اسم العميل لتعزيز الثقة.
-                    5. لا تقدم وعوداً مطلقة.
+                    أنت "مساعد ضاد"، المستشار الذكي في شركة ضاد.
+                    ✦ أسلوبك مهذب، سلس، وواثق.
+                    ✦ تتحدث بفصحى سهلة أو لهجة سعودية بسيطة.
+                    ✦ تبدأ بتحليل المعلومات، ثم تقدم الحلول المنظمة.
+                    ✦ ممنوع تذكر الأسعار — فقط توجه العميل للضغط على زر ضاد في أسفل الصفحة.
 
-                    بيانات العميل الحالية: ${JSON.stringify(payload.clientInfo)}
-                    ${payload.isFirstRun ? "ابدأ بترحيب بأسلوبك المميز وحلل البيانات المتاحة." : ""}
+                    بيانات العميل:
+                    ${JSON.stringify(payload.clientInfo)}
+
+                    ${payload.isFirstRun ? "ابدأ الترحيب وابدأ تحليل بيانات العميل فوراً." : ""}
                 `;
 
+                // دمج الرسائل السابقة مع الـ system prompt
                 let contents = [{ role: "user", parts: [{ text: systemPrompt }] }];
                 if (payload.history && payload.history.length > 0) {
                     contents = contents.concat(payload.history.slice(-4));
                 }
 
-                // نرسل الطلب إلى الـ Apps Script كـ proxy
+                // إرسال الطلب إلى Google Apps Script
                 const response = await fetch(GOOGLE_SCRIPT_URL, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ contents })
                 });
 
-                // محاولة قراءة الـ JSON من رد الـ Web App
-                const text = await response.text();
+                // استقبال النص (Apps Script يرجّع نص فقط)
+                const rawText = await response.text();
+
+                // محاولة parsing إذا الرد كان JSON
                 try {
-                    const data = JSON.parse(text);
-                    // إذا الـ Apps Script أعاد نفس شكل Google LLM response
-                    const candidate = data?.candidates?.[0]?.content?.parts?.[0]?.text;
-                    if (candidate) return candidate;
-                    // أو إن الـ Web App أعاد نص مباشر
-                    if (typeof data === 'string') return data;
-                    return JSON.stringify(data).slice(0, 2000); // fallback
-                } catch (e) {
-                    // إذا لم يكن JSON صالح، نرجع النص الخام
-                    return text || "وصل رد فارغ من الخادم.";
+                    const data = JSON.parse(rawText);
+
+                    const text =
+                        data?.candidates?.[0]?.content?.parts?.[0]?.text ||
+                        data?.text ||
+                        rawText;
+
+                    return text;
+                } catch (err) {
+                    return rawText;
                 }
 
             } catch (e) {
