@@ -1,175 +1,197 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no" />
-    <title>أداة إنشاء العروض الفنية | Daad</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+  <title>أداة إنشاء العروض الفنية | Daad</title>
 
-    <script src="https://cdn.tailwindcss.com" defer></script>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+  <!-- ======= Tailwind config قبل تحميل المكتبة (لتجنب tailwind is not defined) ======= -->
+  <script>
+    window.tailwind = {
+      config: {
+        theme: {
+          extend: {
+            colors: {
+              'dark-primary': '#501323',
+              'dark-secondary': '#3E0F1C',
+              'accent-gold': '#D5C5A0',
+              'text-light': '#F2E8D8',
+              'highlight-green': '#10B981',
+              'highlight-orange': '#F59E0B'
+            },
+            fontFamily: { sans: ['Cairo', 'sans-serif'] }
+          }
+        }
+      }
+    };
+  </script>
 
-    <style>
-        :root{ font-family: 'Cairo', sans-serif; }
-        body{ background: radial-gradient(circle at center,#501323 0%,#3E0F1C 100%); min-height:100vh; color:#F2E8D8; }
-        .animate-fade-in{ animation: fadeIn .28s ease both; } @keyframes fadeIn{ from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);} }
-        .scrollbar-thin::-webkit-scrollbar{ width:8px; } .scrollbar-thin::-webkit-scrollbar-thumb{ background:#D5C5A0; border-radius:10px; }
-        input,textarea,select{ background:#3E0F1C; color:#F2E8D8; border:1px solid #501323; transition:all .18s; }
-        input:focus,textarea:focus,select:focus{ outline:none; box-shadow:0 0 0 2px rgba(213,197,160,0.18); border-color:#D5C5A0; }
-        input[type="checkbox"]{ -webkit-appearance:none; appearance:none; width:1.5rem; height:1.5rem; border:2px solid #D5C5A0; background:#3E0F1C; display:grid; place-content:center; }
-        input[type="checkbox"]::before{ content:""; width:.85rem; height:.85rem; transform:scale(0); transition:120ms; box-shadow:inset 1em 1em #501323; clip-path:polygon(14% 44%,0 65%,50% 100%,100% 16%,80% 0%,43% 62%); }
-        input[type="checkbox"]:checked{ background:#D5C5A0; } input[type="checkbox"]:checked::before{ transform:scale(1); }
-        .logo-float{ position:fixed; left:20px; bottom:20px; width:60px; height:60px; border-radius:50%; background:#3E0F1C; border:3px solid #E0D6BC; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 15px rgba(0,0,0,.5); z-index:50; }
-        .modal-backdrop{ transition:opacity .28s, visibility .28s; }
-        .chat-log{ height:450px; overflow-y:auto; scroll-behavior:smooth; }
-        .chat-message{ max-width:85%; padding:12px; border-radius:12px; line-height:1.6; margin-bottom:10px; }
-        .user-message{ background:#D5C5A0; color:#3E0F1C; align-self:flex-start; border-radius:12px 12px 0 12px; }
-        .bot-message{ background:#3E0F1C; color:#F2E8D8; align-self:flex-end; border:1px solid #501323; border-radius:12px 12px 12px 0; }
-        .loading-dots span{ width:8px; height:8px; background:#D5C5A0; border-radius:50%; display:inline-block; animation:bounce 1.4s infinite; margin:0 3px; }
-        @keyframes bounce{ 0%,80%,100%{ transform:scale(0);} 40%{ transform:scale(1);} }
-    </style>
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- خط Cairo -->
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+
+  <style>
+    :root{ font-family:'Cairo', sans-serif; }
+    body{ background: radial-gradient(circle at center,#501323 0%,#3E0F1C 100%); min-height:100vh; color:#F2E8D8; -webkit-font-smoothing:antialiased; }
+    .animate-fade-in{ animation: fadeIn .28s ease both; } @keyframes fadeIn{ from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);} }
+    .scrollbar-thin::-webkit-scrollbar{ width:8px; } .scrollbar-thin::-webkit-scrollbar-thumb{ background:#D5C5A0; border-radius:10px; }
+    input,textarea,select{ background:#3E0F1C; color:#F2E8D8; border:1px solid #501323; transition:all .18s; }
+    input:focus,textarea:focus,select:focus{ outline:none; box-shadow:0 0 0 2px rgba(213,197,160,0.18); border-color:#D5C5A0; }
+    input[type="checkbox"]{ -webkit-appearance:none; appearance:none; width:1.5rem; height:1.5rem; border:2px solid #D5C5A0; background:#3E0F1C; display:grid; place-content:center; }
+    input[type="checkbox"]::before{ content:""; width:.85rem; height:.85rem; transform:scale(0); transition:120ms; box-shadow:inset 1em 1em #501323; clip-path:polygon(14% 44%,0 65%,50% 100%,100% 16%,80% 0%,43% 62%); }
+    input[type="checkbox"]:checked{ background:#D5C5A0; } input[type="checkbox"]:checked::before{ transform:scale(1); }
+    .logo-float{ position:fixed; left:20px; bottom:20px; width:60px; height:60px; border-radius:50%; background:#3E0F1C; border:3px solid #E0D6BC; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 15px rgba(0,0,0,.5); z-index:50; }
+    .chat-log{ height:450px; overflow-y:auto; scroll-behavior:smooth; }
+    .chat-message{ max-width:85%; padding:12px; border-radius:12px; line-height:1.6; margin-bottom:10px; }
+    .user-message{ background:#D5C5A0; color:#3E0F1C; align-self:flex-start; border-radius:12px 12px 0 12px; }
+    .bot-message{ background:#3E0F1C; color:#F2E8D8; align-self:flex-end; border:1px solid #501323; border-radius:12px 12px 12px 0; }
+    .loading-dots span{ width:8px; height:8px; background:#D5C5A0; border-radius:50%; display:inline-block; animation:bounce 1.4s infinite; margin:0 3px; }
+    @keyframes bounce{ 0%,80%,100%{ transform:scale(0);} 40%{ transform:scale(1);} }
+  </style>
 </head>
 <body class="antialiased selection:bg-accent-gold selection:text-dark-primary">
 
-<main id="home-view" class="min-h-screen flex items-center justify-center p-6">
+  <main id="home-view" class="min-h-screen flex items-center justify-center p-6">
     <div class="max-w-4xl w-full animate-fade-in text-center">
-        <img src="https://i.ibb.co/fz5m8DNf/imgi-102-cropped-cropped-logo-daad-2000x2000-1-1-700x700-removebg-preview.png" alt="Daad" class="mx-auto h-24 mb-6" />
-        <h1 class="text-4xl font-bold text-accent-gold mb-4">أداة إنشاء العروض الفنية | Daad</h1>
-        <p class="mb-8 max-w-2xl mx-auto text-lg">اختَر نمط العمل وابدأ بتعبئة بيانات المشروع ثم تواصل مع مساعد ض الذكي.</p>
-        <div class="flex gap-4 justify-center">
-            <button id="btn-assistant" class="px-6 py-3 rounded-xl bg-accent-gold text-dark-primary font-bold">الاستعانة بمساعد ض</button>
-            <button id="btn-manual" class="px-6 py-3 rounded-xl bg-dark-secondary border border-accent-gold/30">البدء يدوياً</button>
-        </div>
+      <img src="https://i.ibb.co/fz5m8DNf/imgi-102-cropped-cropped-logo-daad-2000x2000-1-1-700x700-removebg-preview.png" alt="Daad" class="mx-auto h-24 mb-6" />
+      <h1 class="text-4xl font-bold text-accent-gold mb-4">أداة إنشاء العروض الفنية | Daad</h1>
+      <p class="mb-8 max-w-2xl mx-auto text-lg">اختر وضع العمل وابدأ بتعبئة بيانات المشروع ثم تواصل مع مساعد ض.</p>
+      <div class="flex gap-4 justify-center">
+        <button id="btn-assistant" class="px-6 py-3 rounded-xl bg-accent-gold text-dark-primary font-bold">الاستعانة بمساعد ض</button>
+        <button id="btn-manual" class="px-6 py-3 rounded-xl bg-dark-secondary border border-accent-gold/30">البدء يدوياً</button>
+      </div>
     </div>
-</main>
+  </main>
 
-<!-- Client Modal -->
-<div id="client-info-modal" class="modal-backdrop fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4" aria-hidden="true" style="display:none;">
+  <!-- Client Modal -->
+  <div id="client-info-modal" class="modal-backdrop fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4" aria-hidden="true" style="display:none;">
     <div class="bg-dark-secondary rounded-xl p-6 max-w-2xl w-full" onclick="event.stopPropagation()">
-        <div class="flex justify-between items-center mb-4">
-            <h2 class="text-2xl font-bold text-accent-gold">بيانات المشروع</h2>
-            <button onclick="app.closeModal('client-info-modal')" aria-label="غلق">×</button>
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-2xl font-bold text-accent-gold">بيانات المشروع</h2>
+        <button onclick="app.closeModal('client-info-modal')" aria-label="غلق">×</button>
+      </div>
+      <form id="client-info-form" onsubmit="event.preventDefault(); app.handleClientInfoSubmit();">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div><label class="block mb-1 text-accent-gold">اسم المشروع *</label><input id="client-name" required class="w-full p-3 rounded-lg" /></div>
+          <div><label class="block mb-1 text-accent-gold">رقم التواصل</label><input id="client-contact-phone" class="w-full p-3 rounded-lg" /></div>
         </div>
-        <form id="client-info-form" onsubmit="event.preventDefault(); app.handleClientInfoSubmit();">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div><label class="block mb-1 text-accent-gold">اسم المشروع *</label><input id="client-name" required class="w-full p-3 rounded-lg" /></div>
-                <div><label class="block mb-1 text-accent-gold">رقم التواصل</label><input id="client-contact-phone" class="w-full p-3 rounded-lg" /></div>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">
-                <div><label class="block mb-1 text-accent-gold">رابط المتجر</label><input id="client-link" type="url" class="w-full p-3 rounded-lg" /></div>
-                <div><label class="block mb-1 text-accent-gold">حسابات السوشيال</label><input id="client-social-links" class="w-full p-3 rounded-lg" placeholder="روابط أو حسابات مفصولة بفواصل"/></div>
-            </div>
-            <div class="mt-3"><label class="block mb-1 text-accent-gold">نوع النشاط</label><input id="client-business-type" class="w-full p-3 rounded-lg" /></div>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">
-                <div><label class="block mb-1 text-accent-gold">الجمهور المستهدف</label><input id="client-target-audience" class="w-full p-3 rounded-lg" /></div>
-                <div><label class="block mb-1 text-accent-gold">أبرز المنافسين</label><input id="client-competitors" class="w-full p-3 rounded-lg" /></div>
-            </div>
-            <div class="mt-3"><label class="block mb-1 text-accent-gold">أبرز التحديات</label><textarea id="client-challenges" rows="2" class="w-full p-3 rounded-lg"></textarea></div>
-            <div class="mt-3"><label class="block mb-1 text-accent-gold">ملاحظات إضافية</label><textarea id="client-additional-info" rows="2" class="w-full p-3 rounded-lg"></textarea></div>
-            <div class="mt-4">
-                <button id="save-client-info-btn" class="w-full py-3 rounded-xl bg-accent-gold text-dark-primary font-bold">حفظ وبدء التحليل</button>
-            </div>
-        </form>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">
+          <div><label class="block mb-1 text-accent-gold">رابط المتجر</label><input id="client-link" type="url" class="w-full p-3 rounded-lg" /></div>
+          <div><label class="block mb-1 text-accent-gold">حسابات السوشيال</label><input id="client-social-links" class="w-full p-3 rounded-lg" placeholder="روابط أو حسابات مفصولة بفواصل"/></div>
+        </div>
+        <div class="mt-3"><label class="block mb-1 text-accent-gold">نوع النشاط</label><input id="client-business-type" class="w-full p-3 rounded-lg" /></div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">
+          <div><label class="block mb-1 text-accent-gold">الجمهور المستهدف</label><input id="client-target-audience" class="w-full p-3 rounded-lg" /></div>
+          <div><label class="block mb-1 text-accent-gold">أبرز المنافسين</label><input id="client-competitors" class="w-full p-3 rounded-lg" /></div>
+        </div>
+        <div class="mt-3"><label class="block mb-1 text-accent-gold">أبرز التحديات</label><textarea id="client-challenges" rows="2" class="w-full p-3 rounded-lg"></textarea></div>
+        <div class="mt-3"><label class="block mb-1 text-accent-gold">ملاحظات إضافية</label><textarea id="client-additional-info" rows="2" class="w-full p-3 rounded-lg"></textarea></div>
+        <div class="mt-4">
+          <button id="save-client-info-btn" class="w-full py-3 rounded-xl bg-accent-gold text-dark-primary font-bold">حفظ وبدء التحليل</button>
+        </div>
+      </form>
     </div>
-</div>
+  </div>
 
-<!-- AI Modal -->
-<div id="ai-modal" class="modal-backdrop fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4" aria-hidden="true" style="display:none;">
+  <!-- AI Modal -->
+  <div id="ai-modal" class="modal-backdrop fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4" aria-hidden="true" style="display:none;">
     <div class="bg-dark-secondary rounded-xl max-w-3xl w-full h-[85vh] overflow-hidden flex flex-col" onclick="event.stopPropagation()">
-        <div class="flex items-center justify-between p-4 border-b border-dark-primary bg-dark-primary/30">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-full bg-accent-gold flex items-center justify-center">🤖</div>
-                <div><h3 class="text-accent-gold font-bold">مساعد ض</h3><div class="text-xs text-text-light/70">مستشارك الذكي للاستراتيجيات</div></div>
-            </div>
-            <button onclick="app.closeModal('ai-modal')">×</button>
+      <div class="flex items-center justify-between p-4 border-b border-dark-primary bg-dark-primary/30">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-full bg-accent-gold flex items-center justify-center">🤖</div>
+          <div><h3 class="text-accent-gold font-bold">مساعد ض</h3><div class="text-xs text-text-light/70">مستشارك الذكي للاستراتيجيات</div></div>
         </div>
+        <button onclick="app.closeModal('ai-modal')">×</button>
+      </div>
 
-        <div id="chat-log" class="chat-log p-4 flex flex-col gap-3 bg-dark-primary/10"></div>
+      <div id="chat-log" class="chat-log p-4 flex flex-col gap-3 bg-dark-primary/10"></div>
 
-        <div class="p-4 border-t border-dark-primary bg-dark-secondary">
-            <textarea id="chat-input" rows="1" placeholder="اكتب ردك هنا..." class="w-full p-4 rounded-xl resize-none" oninput="this.style.height=''; this.style.height = this.scrollHeight + 'px'"></textarea>
-            <button id="chat-send-btn" class="mt-2 px-4 py-2 rounded-lg bg-accent-gold text-dark-primary font-bold" onclick="app.sendChatMessage()">إرسال</button>
-        </div>
+      <div class="p-4 border-t border-dark-primary bg-dark-secondary">
+        <textarea id="chat-input" rows="1" placeholder="اكتب ردك هنا..." class="w-full p-4 rounded-xl resize-none" oninput="this.style.height=''; this.style.height = this.scrollHeight + 'px'"></textarea>
+        <button id="chat-send-btn" class="mt-2 px-4 py-2 rounded-lg bg-accent-gold text-dark-primary font-bold" onclick="app.sendChatMessage()">إرسال</button>
+      </div>
     </div>
-</div>
+  </div>
 
-<a class="logo-float" href="https://wa.me/+966592136734" target="_blank" aria-label="واتساب">
+  <a class="logo-float" href="https://wa.me/+966592136734" target="_blank" aria-label="واتساب">
     <img src="https://i.ibb.co/fz5m8DNf/imgi-102-cropped-cropped-logo-daad-2000x2000-1-1-700x700-removebg-preview.png" style="width:48px;height:48px;object-fit:cover;" />
-</a>
+  </a>
 
 <script>
 const app = (function(){
-    const CONSTANTS = {
-        URLS: {
-            STORAGE: "https://script.google.com/macros/s/AKfycbw-6vu6Hbj-gcENg7Mv4q0MZLEYqs2WgceyY0miD4soWdrp1JxoEOgYYSBfI2Z9p0aV/exec",
-            ASSISTANT: "https://script.google.com/macros/s/AKfycbwlvaIdSNqYgNLO182hDyEmMZi09EpKXfjJ999Nf4QLJ-zP38hiXN54SZgWwO2wStVb3A/exec"
-        },
-        KEYS: { CLIENT: 'daad_client_v2', PROPOSAL: 'daad_proposal_v2' },
-        MAX_MONTHS: 12,
-        TIMEOUT_MS: 30000
+  const CONSTANTS = {
+    URLS: {
+      // ضع هنا رابط الـ Web App المنشور (Assistant endpoint)
+      ASSISTANT: "https://script.google.com/macros/s/AKfycbxzRjUWUnyWdjeGXPwtnyFVQsHURQ6tJYm7rIAC5cnYq8fnn4SnRH6Z7JEDCs4HBgJoxQ/exec",
+      // لو لديك endpoint للتخزين، ضعه هنا، وإلا اتركه أو اجعل نفس ASSISTANT
+      STORAGE: "https://script.google.com/macros/s/AKfycbw796XS3wnFxDhjMtO4KMLp343cJNQ4qt8jzPQMyK-ofy0oWCjExW8R-eQbDF_mC7sD/exec"
+    },
+    KEYS: { CLIENT: 'daad_client_v2' },
+    TIMEOUT_MS: 30000
+  };
+
+  let state = { chatHistory: [], isAssistantMode: false };
+
+  const $ = id => document.getElementById(id);
+  const escapeHtml = s => (typeof s==='string') ? s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') : s;
+
+  function openModal(id){
+    const m = document.getElementById(id+'-modal') || document.getElementById(id);
+    if(!m) return;
+    m.style.display = 'flex';
+    m.setAttribute('aria-hidden','false');
+    if(id==='ai') setTimeout(()=> $('chat-input').focus(), 200);
+  }
+  function closeModal(id){
+    const m = document.getElementById(id+'-modal') || document.getElementById(id);
+    if(!m) return;
+    m.style.display = 'none';
+    m.setAttribute('aria-hidden','true');
+  }
+
+  function fillForm(info){
+    if(!info) return;
+    const map = { name:'client-name', phone:'client-contact-phone', link:'client-link', businessType:'client-business-type', targetAudience:'client-target-audience', competitors:'client-competitors', challenges:'client-challenges', additionalInfo:'client-additional-info' };
+    Object.keys(map).forEach(k => { const el = $(map[k]); if(el) el.value = info[k] || ''; });
+  }
+
+  function getFormInfo(){
+    return {
+      name: $('client-name').value.trim(),
+      phone: $('client-contact-phone').value.trim(),
+      link: $('client-link').value.trim(),
+      businessType: $('client-business-type').value.trim(),
+      targetAudience: $('client-target-audience').value.trim(),
+      competitors: $('client-competitors').value.trim(),
+      challenges: $('client-challenges').value.trim(),
+      additionalInfo: $('client-additional-info').value.trim(),
+      timestamp: new Date().toISOString()
     };
+  }
 
-    let state = { monthlySelections:[{}], visibleMonths:1, chatHistory:[], isAssistantMode:false };
-
-    const $ = id => document.getElementById(id);
-    const escapeHtml = str => (typeof str === 'string') ? str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;') : str;
-
-    function openModalById(id){
-        const el = $(id+'-modal') || $(id);
-        if(!el) return;
-        el.style.display = 'flex';
-        el.setAttribute('aria-hidden','false');
+  async function sendToStorage(data){
+    try {
+      const res = await fetch(CONSTANTS.URLS.STORAGE, { method:'POST', mode:'cors', headers:{'Content-Type':'application/json'}, body: JSON.stringify(data), keepalive:true });
+      if(!res.ok) throw new Error('Storage responded with ' + res.status);
+      return res;
+    } catch(e) {
+      // best-effort fallback
+      try {
+        await fetch(CONSTANTS.URLS.STORAGE, { method:'POST', mode:'no-cors', headers:{'Content-Type':'application/json'}, body: JSON.stringify(data), keepalive:true });
+        return { ok:true, fallback:true };
+      } catch(err){ throw e; }
     }
-    function closeModal(id){
-        const el = $(id+'-modal') || $(id);
-        if(!el) return;
-        el.style.display = 'none';
-        el.setAttribute('aria-hidden','true');
-    }
+  }
 
-    function fillForm(info){
-        if(!info) return;
-        const map = { name:'client-name', phone:'client-contact-phone', link:'client-link', businessType:'client-business-type', targetAudience:'client-target-audience', competitors:'client-competitors', strategyGoal:'client-strategy-goal', budgetRange:'client-budget-range', socials:'client-social-links', challenges:'client-challenges', additionalInfo:'client-additional-info' };
-        Object.keys(map).forEach(k => { const el = $(map[k]); if(el) el.value = info[k] || ''; });
-    }
+  // ===== callAssistantAPI محسَّنة (يحاول CORS ويعطي رسائل واضحة) =====
+  async function callAssistantAPI(originalPayload){
+    const controller = new AbortController();
+    const timeoutId = setTimeout(()=>controller.abort(), CONSTANTS.TIMEOUT_MS);
 
-    function getFormInfo(){
-        return {
-            name: $('client-name').value.trim(),
-            phone: $('client-contact-phone').value.trim(),
-            link: $('client-link').value.trim(),
-            businessType: $('client-business-type').value.trim(),
-            targetAudience: $('client-target-audience').value.trim(),
-            strategyGoal: $('client-strategy-goal') ? $('client-strategy-goal').value : '',
-            budgetRange: $('client-budget-range') ? $('client-budget-range').value : '',
-            competitors: $('client-competitors').value.trim(),
-            socials: $('client-social-links').value.trim(),
-            challenges: $('client-challenges').value.trim(),
-            additionalInfo: $('client-additional-info').value.trim(),
-            timestamp: new Date().toISOString()
-        };
-    }
-
-    async function sendToStorage(data){
-        try {
-            const res = await fetch(CONSTANTS.URLS.STORAGE, { method:'POST', mode:'cors', headers:{'Content-Type':'application/json'}, body: JSON.stringify(data), keepalive:true });
-            if(!res.ok) throw new Error('Storage response not OK: ' + res.status);
-            return res;
-        } catch(e) {
-            // fallback to no-cors best-effort
-            try {
-                await fetch(CONSTANTS.URLS.STORAGE, { method:'POST', mode:'no-cors', headers:{'Content-Type':'application/json'}, body: JSON.stringify(data), keepalive:true });
-                return { ok:true, fallback:true };
-            } catch(err) { throw e; }
-        }
-    }
-
-    // ===== تحسين الاتصال بالمساعد: يحاول CORS ثم no-cors fallback ويعطي رسائل واضحة =====
-    async function callAssistantAPI(originalPayload){
-        const controller = new AbortController();
-        const timeoutId = setTimeout(()=>controller.abort(), CONSTANTS.TIMEOUT_MS);
-
-        const client = originalPayload.clientInfo || {};
-        const systemPrompt = `
+    const client = originalPayload.clientInfo || {};
+    const systemPrompt = `
 أنت "مساعد ضاد"، المستشار الذكي لشركة "ضاد".
 استخدم بيانات العميل التالية عند الحاجة:
 - الاسم: ${client.name || 'غير محدد'}
@@ -179,121 +201,112 @@ const app = (function(){
 - الجمهور: ${client.targetAudience || 'غير محدد'}
 - التحديات: ${client.challenges || 'لا يوجد'}
 رد مختصر وعملي، وإذا احتجت توضيح اطلبه.
-        `;
+    `;
 
-        let contents = JSON.parse(JSON.stringify(originalPayload.history || []));
-        if(contents.length > 0 && contents[0].role === 'user'){
-            contents[0].parts[0].text = systemPrompt + "\n\n---\n\n" + contents[0].parts[0].text;
-        } else if(contents.length === 0){
-            contents = [{ role:"user", parts:[{ text: systemPrompt }] }];
-        }
-
-        const geminiBody = { contents };
-
-        // محاولة CORS
-        try {
-            const response = await fetch(CONSTANTS.URLS.ASSISTANT, {
-                method:'POST', mode:'cors', headers:{ 'Content-Type':'application/json' },
-                body: JSON.stringify(geminiBody), signal: controller.signal, credentials:'omit'
-            });
-            clearTimeout(timeoutId);
-
-            if(!response.ok){
-                const errText = await response.text().catch(()=>'');
-                try { const errJson = JSON.parse(errText||'{}'); if(errJson.error && errJson.error.message) throw new Error(errJson.error.message); } catch(e){}
-                throw new Error(`Server Error: ${response.status} - ${errText || response.statusText}`);
-            }
-
-            const txt = await response.text();
-            try {
-                const json = JSON.parse(txt);
-                return json.candidates?.[0]?.content?.parts?.[0]?.text || json.text || json.reply || JSON.stringify(json);
-            } catch(e){
-                return txt;
-            }
-        } catch(err){
-            clearTimeout(timeoutId);
-            console.error("Assistant fetch error:", err);
-            if(err.name === 'AbortError') throw new Error('انتهت مهلة الاتصال بالمساعد. حاول مرة ثانية.');
-
-            // fallback: try no-cors (won't be readable) — inform the user about CORS
-            try {
-                await fetch(CONSTANTS.URLS.ASSISTANT, {
-                    method:'POST', mode:'no-cors', headers:{ 'Content-Type':'application/json' },
-                    body: JSON.stringify(geminiBody), signal: controller.signal, keepalive:true
-                });
-                throw new Error('تم إرسال الطلب لكن المتصفح منع قراءة الرد (opaque response). تأكد من تفعيل Access-Control-Allow-Origin على السيرفر.');
-            } catch(fallbackErr){
-                console.error('Fallback fetch failed:', fallbackErr);
-                throw new Error('فشل الاتصال بالمساعد. غالباً السبب: سياسة CORS أو رابط assistant غير منشور للجميع. راجع نشر Web App وأضف رؤوس CORS.');
-            }
-        }
+    let contents = JSON.parse(JSON.stringify(originalPayload.history || []));
+    if(contents.length > 0 && contents[0].role === 'user'){
+      contents[0].parts[0].text = systemPrompt + "\n\n---\n\n" + contents[0].parts[0].text;
+    } else if(contents.length === 0){
+      contents = [{ role:"user", parts:[{ text: systemPrompt }] }];
     }
 
-    // UI helpers
-    function addChatMsg(text, sender='bot', isLoading=false){
-        const log = $('chat-log');
-        const wrapper = document.createElement('div');
-        wrapper.className = 'chat-message ' + (sender==='user' ? 'user-message' : 'bot-message');
-        if(isLoading) wrapper.innerHTML = '<div class="loading-dots"><span></span><span></span><span></span></div>';
-        else wrapper.innerHTML = escapeHtml(String(text)).replace(/\n/g,'<br>');
-        log.appendChild(wrapper);
-        log.scrollTop = log.scrollHeight;
-    }
-    function removeLoading(){ const l = document.querySelector('.loading-dots'); if(l) l.remove(); }
+    const geminiBody = { contents };
 
-    // handlers
-    async function handleClientInfoSubmit(){
-        const info = getFormInfo();
-        if(!info.name){ alert('الرجاء إدخال اسم المشروع'); $('client-name').focus(); return; }
-        localStorage.setItem(CONSTANTS.KEYS.CLIENT, JSON.stringify(info));
-        const btn = $('save-client-info-btn'); const original = btn.innerHTML;
-        btn.disabled = true; btn.innerHTML = 'جاري الحفظ...';
-        try {
-            await sendToStorage(info);
-            closeModal('client-info-modal');
-            if(state.isAssistantMode) openModalById('ai-modal');
-            alert('تم الحفظ وإرسال البيانات (إن أمكن).');
-        } catch(e){
-            console.error('Storage error', e);
-            alert('تم الحفظ محليًا ولكن واجهنا مشكلة في إرسال البيانات للسيرفر.');
-            closeModal('client-info-modal');
-            if(state.isAssistantMode) openModalById('ai-modal');
-        } finally {
-            btn.disabled = false; btn.innerHTML = original;
-        }
-    }
+    try {
+      const response = await fetch(CONSTANTS.URLS.ASSISTANT, {
+        method:'POST', mode:'cors', headers:{ 'Content-Type':'application/json' },
+        body: JSON.stringify(geminiBody), signal: controller.signal, credentials:'omit'
+      });
+      clearTimeout(timeoutId);
 
-    async function sendChatMessage(){
-        const input = $('chat-input'); const txt = input.value.trim(); if(!txt) return;
-        input.value=''; input.style.height='auto';
-        addChatMsg(txt,'user');
-        state.chatHistory.push({ role:'user', parts:[{ text: txt }] });
-        addChatMsg('...', 'bot', true);
-        try {
-            const info = JSON.parse(localStorage.getItem(CONSTANTS.KEYS.CLIENT) || '{}');
-            const reply = await callAssistantAPI({ history: state.chatHistory, clientInfo: info });
-            removeLoading(); addChatMsg(reply,'bot'); state.chatHistory.push({ role:'model', parts:[{ text: reply }] });
-        } catch(e){
-            removeLoading(); addChatMsg('🚫 حدث خطأ: ' + e.message, 'bot');
-        }
-    }
+      if(!response.ok){
+        const errText = await response.text().catch(()=>'');
+        throw new Error(`Server Error: ${response.status} - ${errText || response.statusText}`);
+      }
 
-    // init & bindings
-    function init(){
-        // wire buttons
-        $('btn-assistant').addEventListener('click', ()=>{ state.isAssistantMode=true; document.querySelector('main').style.display='none'; openModalById('client-info'); });
-        $('btn-manual').addEventListener('click', ()=>{ alert('وضع العمل اليدوي — تحت التطوير'); });
-        document.getElementById('client-info-modal').addEventListener('click', ()=> closeModal('client-info-modal'));
-        document.getElementById('ai-modal').addEventListener('click', ()=> closeModal('ai-modal'));
-        const saved = localStorage.getItem(CONSTANTS.KEYS.CLIENT); if(saved) fillForm(JSON.parse(saved));
-        document.addEventListener('keydown', e => { if(e.key==='Escape'){ closeModal('ai-modal'); closeModal('client-info-modal'); } });
-        $('chat-input').addEventListener('keypress', e => { if(e.key==='Enter' && !e.shiftKey){ e.preventDefault(); sendChatMessage(); } });
-    }
+      const txt = await response.text();
+      try {
+        const json = JSON.parse(txt);
+        return json.candidates?.[0]?.content?.parts?.[0]?.text || json.text || json.reply || JSON.stringify(json);
+      } catch(e){
+        return txt;
+      }
+    } catch(err){
+      clearTimeout(timeoutId);
+      if(err.name === 'AbortError') throw new Error('انتهت مهلة الاتصال بالمساعد. حاول مرة أخرى.');
+      console.error('Assistant fetch error:', err);
 
-    return {
-        init, openModal: openModalById, closeModal, handleClientInfoSubmit, sendChatMessage, sendToStorage, callAssistantAPI
-    };
+      // محاولة fallback no-cors لإرسال الطلب فقط (لن نستطيع قراءة الرد فيها)
+      try {
+        await fetch(CONSTANTS.URLS.ASSISTANT, { method:'POST', mode:'no-cors', headers:{ 'Content-Type':'application/json' }, body: JSON.stringify(geminiBody), keepalive:true });
+        throw new Error('تم إرسال الطلب لكن المتصفح منع قراءة الرد (opaque). تأكد من تفعيل CORS على السيرفر.');
+      } catch(fallbackErr){
+        throw new Error('فشل الاتصال بالمساعد. غالباً السبب: سياسة CORS أو رابط الـ Web App غير منشور للجميع.');
+      }
+    }
+  }
+
+  function addChatMsg(text, sender='bot', isLoading=false){
+    const log = $('chat-log');
+    const div = document.createElement('div');
+    div.className = 'chat-message ' + (sender==='user' ? 'user-message' : 'bot-message');
+    if(isLoading) div.innerHTML = '<div class="loading-dots"><span></span><span></span><span></span></div>';
+    else div.innerHTML = escapeHtml(String(text)).replace(/\n/g,'<br>');
+    log.appendChild(div);
+    log.scrollTop = log.scrollHeight;
+  }
+  function removeLoading(){ const l = document.querySelector('.loading-dots'); if(l) l.remove(); }
+
+  async function handleClientInfoSubmit(){
+    const info = getFormInfo();
+    if(!info.name){ alert('الرجاء إدخال اسم المشروع'); $('client-name').focus(); return; }
+    localStorage.setItem(CONSTANTS.KEYS.CLIENT, JSON.stringify(info));
+    const btn = $('save-client-info-btn'); const original = btn.innerHTML;
+    btn.disabled = true; btn.innerHTML = 'جاري الحفظ...';
+    try {
+      await sendToStorage(info);
+      closeModal('client-info-modal');
+      if(state.isAssistantMode) openModal('ai-modal');
+      alert('تم الحفظ وإرسال البيانات (إن أمكن).');
+    } catch(e){
+      console.error('Storage error', e);
+      alert('تم الحفظ محليًا ولكن واجهنا مشكلة في إرسال البيانات للسيرفر.');
+      closeModal('client-info-modal');
+      if(state.isAssistantMode) openModal('ai-modal');
+    } finally {
+      btn.disabled = false; btn.innerHTML = original;
+    }
+  }
+
+  async function sendChatMessage(){
+    const input = $('chat-input'); const txt = input.value.trim(); if(!txt) return;
+    input.value=''; input.style.height='auto';
+    addChatMsg(txt,'user');
+    state.chatHistory.push({ role:'user', parts:[{ text: txt }] });
+    addChatMsg('...', 'bot', true);
+
+    try {
+      const info = JSON.parse(localStorage.getItem(CONSTANTS.KEYS.CLIENT) || '{}');
+      const reply = await callAssistantAPI({ history: state.chatHistory, clientInfo: info });
+      removeLoading(); addChatMsg(reply,'bot'); state.chatHistory.push({ role:'model', parts:[{ text: reply }] });
+    } catch(e){
+      removeLoading(); addChatMsg('🚫 حدث خطأ: ' + e.message, 'bot');
+    }
+  }
+
+  function init(){
+    // buttons
+    $('btn-assistant').addEventListener('click', ()=>{ state.isAssistantMode=true; document.querySelector('main').style.display='none'; document.getElementById('client-info-modal').style.display='flex'; });
+    $('btn-manual').addEventListener('click', ()=>{ alert('وضع العمل اليدوي — تحت التطوير'); });
+    document.getElementById('client-info-modal').addEventListener('click', ()=> closeModal('client-info-modal'));
+    document.getElementById('ai-modal').addEventListener('click', ()=> closeModal('ai-modal'));
+    document.addEventListener('keydown', e => { if(e.key==='Escape'){ closeModal('ai-modal'); closeModal('client-info-modal'); } });
+    $('chat-input').addEventListener('keypress', e => { if(e.key==='Enter' && !e.shiftKey){ e.preventDefault(); sendChatMessage(); } });
+    // load saved client
+    const saved = localStorage.getItem(CONSTANTS.KEYS.CLIENT); if(saved) fillForm(JSON.parse(saved));
+  }
+
+  return { init, openModal, closeModal, handleClientInfoSubmit, sendChatMessage };
 })();
 
 document.addEventListener('DOMContentLoaded', () => app.init());
