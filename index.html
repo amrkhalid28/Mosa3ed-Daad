@@ -1,435 +1,176 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no" />
     <title>أداة إنشاء العروض الفنية | Daad</title>
 
-    <!-- Tailwind -->
     <script src="https://cdn.tailwindcss.com" defer></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js" defer></script>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
 
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        'dark-primary': '#501323',
-                        'dark-secondary': '#3E0F1C',
-                        'accent-gold': '#D5C5A0',
-                        'text-light': '#F2E8D8',
-                        'highlight-green': '#10B981',
-                        'highlight-orange': '#F59E0B',
-                    },
-                    fontFamily: { sans: ['Cairo', 'sans-serif'] }
-                }
-            }
-        }
-    </script>
-
     <style>
-        :root { font-family: 'Cairo', sans-serif; }
-
-        body {
-            background-color: #501323;
-            background-image: radial-gradient(circle at center, #501323 0%, #3E0F1C 100%);
-            min-height: 100vh;
-            background-attachment: fixed;
-        }
-
-        /* small fade-in utility used in JS */
-        .animate-fade-in { animation: fadeIn .28s ease both; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* تحسين شريط التمرير */
-        .scrollbar-thin::-webkit-scrollbar { width: 8px; height: 8px; }
-        .scrollbar-thin::-webkit-scrollbar-thumb { background-color: #D5C5A0; border-radius: 10px; }
-        .scrollbar-thin::-webkit-scrollbar-track { background-color: #3E0F1C; }
-
-        /* تحسين حقول الإدخال */
-        input, textarea, select {
-            background-color: #3E0F1C;
-            color: #F2E8D8;
-            border: 1px solid #501323;
-            transition: all 0.2s ease-in-out;
-        }
-        input:focus, textarea:focus, select:focus {
-            border-color: #D5C5A0;
-            box-shadow: 0 0 0 2px rgba(213,197,160,0.18);
-            outline: none;
-        }
-
-        /* Checkbox مخصص */
-        input[type="checkbox"] {
-            -webkit-appearance: none; appearance: none;
-            width: 1.5rem; height: 1.5rem;
-            border: 2px solid #D5C5A0;
-            border-radius: 0.375rem;
-            background-color: #3E0F1C;
-            cursor: pointer;
-            display: grid; place-content: center;
-        }
-        input[type="checkbox"]::before {
-            content: "";
-            width: 0.85rem; height: 0.85rem;
-            transform: scale(0);
-            transition: 120ms transform ease-in-out;
-            box-shadow: inset 1em 1em #501323;
-            transform-origin: center;
-            clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
-        }
-        input[type="checkbox"]:checked { background-color: #D5C5A0; }
-        input[type="checkbox"]:checked::before { transform: scale(1); }
-
-        /* زر عائم */
-        .logo-float {
-            position: fixed; bottom: 20px; left: 20px; z-index: 50;
-            cursor: pointer; border-radius: 50%;
-            transition: transform .3s, box-shadow .3s;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-            background-color: #3E0F1C; border: 3px solid #E0D6BC;
-            width: 60px; height: 60px; display:flex; align-items:center; justify-content:center; overflow:hidden;
-        }
-        .logo-float:hover { transform: scale(1.06); box-shadow: 0 8px 20px rgba(0,0,0,0.7); }
-        .logo-float img{ width:100%; height:100%; object-fit:cover; }
-
-        /* المودال */
-        .modal-backdrop { transition: opacity .28s ease, visibility .28s ease; }
-        .modal-backdrop[aria-hidden="true"] { opacity: 0; visibility: hidden; }
-        .modal-backdrop[aria-hidden="false"] { opacity: 1; visibility: visible; }
-
-        .chat-log { height: 450px; scroll-behavior: smooth; }
-        .chat-message { max-width: 85%; word-wrap: break-word; line-height:1.6; font-size:0.95rem; }
-        .user-message { background-color: #D5C5A0; color: #3E0F1C; align-self: flex-start; border-radius: 12px 12px 0 12px; padding:12px; }
-        .bot-message { background-color: #3E0F1C; color: #F2E8D8; border: 1px solid #501323; align-self: flex-end; border-radius: 12px 12px 12px 0; padding:12px; }
-
-        /* Loading */
-        .loading-dots span{ width:8px; height:8px; background-color:#D5C5A0; border-radius:50%; display:inline-block; animation:bounce 1.4s infinite ease-in-out both; margin:0 2px;}
-        .loading-dots span:nth-child(1){ animation-delay:-0.32s; } .loading-dots span:nth-child(2){ animation-delay:-0.16s; }
-        @keyframes bounce{ 0%,80%,100%{ transform: scale(0); } 40%{ transform: scale(1.0); } }
-
-        /* Print */
-        @media print {
-            .no-print { display:none !important; }
-            body { background-color:#fff !important; background-image:none !important; color:#000 !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-        }
+        :root{ font-family: 'Cairo', sans-serif; }
+        body{ background: radial-gradient(circle at center,#501323 0%,#3E0F1C 100%); min-height:100vh; color:#F2E8D8; }
+        .animate-fade-in{ animation: fadeIn .28s ease both; } @keyframes fadeIn{ from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);} }
+        .scrollbar-thin::-webkit-scrollbar{ width:8px; } .scrollbar-thin::-webkit-scrollbar-thumb{ background:#D5C5A0; border-radius:10px; }
+        input,textarea,select{ background:#3E0F1C; color:#F2E8D8; border:1px solid #501323; transition:all .18s; }
+        input:focus,textarea:focus,select:focus{ outline:none; box-shadow:0 0 0 2px rgba(213,197,160,0.18); border-color:#D5C5A0; }
+        input[type="checkbox"]{ -webkit-appearance:none; appearance:none; width:1.5rem; height:1.5rem; border:2px solid #D5C5A0; background:#3E0F1C; display:grid; place-content:center; }
+        input[type="checkbox"]::before{ content:""; width:.85rem; height:.85rem; transform:scale(0); transition:120ms; box-shadow:inset 1em 1em #501323; clip-path:polygon(14% 44%,0 65%,50% 100%,100% 16%,80% 0%,43% 62%); }
+        input[type="checkbox"]:checked{ background:#D5C5A0; } input[type="checkbox"]:checked::before{ transform:scale(1); }
+        .logo-float{ position:fixed; left:20px; bottom:20px; width:60px; height:60px; border-radius:50%; background:#3E0F1C; border:3px solid #E0D6BC; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 15px rgba(0,0,0,.5); z-index:50; }
+        .modal-backdrop{ transition:opacity .28s, visibility .28s; }
+        .chat-log{ height:450px; overflow-y:auto; scroll-behavior:smooth; }
+        .chat-message{ max-width:85%; padding:12px; border-radius:12px; line-height:1.6; margin-bottom:10px; }
+        .user-message{ background:#D5C5A0; color:#3E0F1C; align-self:flex-start; border-radius:12px 12px 0 12px; }
+        .bot-message{ background:#3E0F1C; color:#F2E8D8; align-self:flex-end; border:1px solid #501323; border-radius:12px 12px 12px 0; }
+        .loading-dots span{ width:8px; height:8px; background:#D5C5A0; border-radius:50%; display:inline-block; animation:bounce 1.4s infinite; margin:0 3px; }
+        @keyframes bounce{ 0%,80%,100%{ transform:scale(0);} 40%{ transform:scale(1);} }
     </style>
 </head>
-<body class="text-text-light antialiased overflow-x-hidden selection:bg-accent-gold selection:text-dark-primary">
+<body class="antialiased selection:bg-accent-gold selection:text-dark-primary">
 
-    <!-- HOME -->
-    <main id="home-view" class="min-h-screen w-full flex items-center justify-center p-4 transition-all duration-500">
-        <div class="max-w-4xl mx-auto w-full animate-fade-in">
-            <img src="https://i.ibb.co/fz5m8DNf/imgi-102-cropped-cropped-logo-daad-2000x2000-1-1-700x700-removebg-preview.png" alt="Daad Logo" class="h-24 w-auto mx-auto mb-6 drop-shadow-lg" onerror="this.onerror=null; this.src='https://placehold.co/100x80/501323/D5C5A0?text=DAAD';" />
-            <h1 class="text-3xl md:text-5xl font-bold text-accent-gold mb-6 text-center">أداة إنشاء العروض الفنية | Daad</h1>
-            <p class="text-lg text-text-light/90 mb-12 text-center max-w-2xl mx-auto">ابدأ بتحديد الطريقة المفضلة لإنشاء الخطة الاستراتيجية لمشروعك.</p>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div id="assistant-card" class="md:col-span-2 group bg-accent-gold text-dark-primary p-8 rounded-xl shadow-2xl transition-all duration-300 transform hover:-translate-y-1 hover:shadow-accent-gold/20 cursor-pointer relative overflow-hidden" role="button" tabindex="0" aria-pressed="false">
-                    <div class="absolute top-0 right-0 w-20 h-20 bg-white/10 rounded-bl-full"></div>
-                    <h2 class="text-2xl md:text-3xl font-bold mb-3 group-hover:text-dark-secondary transition-colors">الاستعانة بمساعد ض</h2>
-                    <p class="text-lg text-dark-primary/80 font-medium">دع المستشار الذكي يحلل بيانات المشروع ويقترح خطة استراتيجية احترافية.</p>
-                </div>
-
-                <div id="manual-card" class="md:col-span-1 group bg-dark-secondary text-text-light p-8 rounded-xl shadow-xl border border-accent-gold/30 transition-all duration-300 transform hover:-translate-y-1 hover:border-accent-gold cursor-pointer" role="button" tabindex="0">
-                    <h2 class="text-2xl md:text-3xl font-bold mb-3 text-accent-gold">البدء يدوياً</h2>
-                    <p class="text-lg text-text-light/80">اختر الخدمات والأشهر بنفسك.</p>
-                </div>
-            </div>
-        </div>
-    </main>
-
-    <!-- CLIENT INFO MODAL -->
-    <div id="client-info-modal" class="modal-backdrop fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-[100]" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="client-info-title">
-        <div class="bg-dark-secondary rounded-xl shadow-2xl border border-accent-gold/50 max-w-3xl w-full p-6 transform transition-all duration-300 scale-95" onclick="event.stopPropagation()" >
-            <div class="flex justify-between items-center mb-6 border-b border-dark-primary pb-4">
-                <h2 id="client-info-title" class="text-2xl font-bold text-accent-gold">بيانات المشروع</h2>
-                <button type="button" onclick="app.closeModal('client-info-modal')" class="text-text-light/70 hover:text-accent-gold transition-colors text-2xl leading-none" aria-label="إغلاق">&times;</button>
-            </div>
-
-            <form id="client-info-form" class="space-y-4 max-h-[70vh] overflow-y-auto scrollbar-thin pr-2" onsubmit="event.preventDefault(); app.handleClientInfoSubmit();">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-bold text-accent-gold mb-2" for="client-name">اسم المشروع <span class="text-red-500">*</span></label>
-                        <input id="client-name" name="client-name" required type="text" class="w-full p-3 rounded-lg" />
-                    </div>
-                    <div>
-                        <label class="block text-sm font-bold text-accent-gold mb-2" for="client-contact-phone">رقم التواصل</label>
-                        <input id="client-contact-phone" name="client-contact-phone" type="tel" class="w-full p-3 rounded-lg" />
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-bold text-accent-gold mb-2" for="client-link">رابط المتجر</label>
-                        <input id="client-link" name="client-link" type="url" class="w-full p-3 rounded-lg" />
-                    </div>
-                    <div>
-                        <label class="block text-sm font-bold text-accent-gold mb-2" for="client-social-links">حسابات السوشيال</label>
-                        <input id="client-social-links" name="client-social-links" type="text" class="w-full p-3 rounded-lg" placeholder="روابط أو حسابات مفصولة بفواصل" />
-                    </div>
-                </div>
-
-                <div>
-                    <label class="block text-sm font-bold text-accent-gold mb-2" for="client-business-type">نوع النشاط</label>
-                    <input id="client-business-type" name="client-business-type" type="text" class="w-full p-3 rounded-lg" />
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-bold text-accent-gold mb-2" for="client-target-audience">الجمهور المستهدف</label>
-                        <input id="client-target-audience" name="client-target-audience" type="text" class="w-full p-3 rounded-lg" />
-                    </div>
-                    <div>
-                        <label class="block text-sm font-bold text-accent-gold mb-2" for="client-competitors">أبرز المنافسين</label>
-                        <input id="client-competitors" name="client-competitors" type="text" class="w-full p-3 rounded-lg" />
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-bold text-accent-gold mb-2" for="client-strategy-goal">الهدف الاستراتيجي</label>
-                        <select id="client-strategy-goal" name="client-strategy-goal" class="w-full p-3 rounded-lg cursor-pointer">
-                            <option value="زيادة المبيعات">زيادة المبيعات</option>
-                            <option value="الوعي بالعلامة التجارية">الوعي بالعلامة التجارية</option>
-                            <option value="إطلاق منتج جديد">إطلاق منتج جديد</option>
-                            <option value="أخرى">أخرى</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <label class="block text-sm font-bold text-accent-gold mb-2" for="client-budget-range">نطاق الميزانية</label>
-                        <select id="client-budget-range" name="client-budget-range" class="w-full p-3 rounded-lg cursor-pointer">
-                            <option value="متوسطة">متوسطة (Growth)</option>
-                            <option value="كبيرة">كبيرة (Enterprise)</option>
-                            <option value="غير محدد">غير محدد</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div>
-                    <label class="block text-sm font-bold text-accent-gold mb-2" for="client-challenges">أبرز التحديات</label>
-                    <textarea id="client-challenges" name="client-challenges" rows="2" class="w-full p-3 rounded-lg"></textarea>
-                </div>
-
-                <div>
-                    <label class="block text-sm font-bold text-accent-gold mb-2" for="client-additional-info">ملاحظات إضافية</label>
-                    <textarea id="client-additional-info" name="client-additional-info" rows="2" class="w-full p-3 rounded-lg"></textarea>
-                </div>
-
-                <button type="submit" id="save-client-info-btn" class="bg-accent-gold hover:bg-white text-dark-primary font-bold py-3 px-6 rounded-xl shadow-lg w-full transition-all duration-300 transform active:scale-95 flex justify-center items-center gap-2">
-                    <span>حفظ وبدء التحليل</span>
-                </button>
-            </form>
+<main id="home-view" class="min-h-screen flex items-center justify-center p-6">
+    <div class="max-w-4xl w-full animate-fade-in text-center">
+        <img src="https://i.ibb.co/fz5m8DNf/imgi-102-cropped-cropped-logo-daad-2000x2000-1-1-700x700-removebg-preview.png" alt="Daad" class="mx-auto h-24 mb-6" />
+        <h1 class="text-4xl font-bold text-accent-gold mb-4">أداة إنشاء العروض الفنية | Daad</h1>
+        <p class="mb-8 max-w-2xl mx-auto text-lg">اختَر نمط العمل وابدأ بتعبئة بيانات المشروع ثم تواصل مع مساعد ض الذكي.</p>
+        <div class="flex gap-4 justify-center">
+            <button id="btn-assistant" class="px-6 py-3 rounded-xl bg-accent-gold text-dark-primary font-bold">الاستعانة بمساعد ض</button>
+            <button id="btn-manual" class="px-6 py-3 rounded-xl bg-dark-secondary border border-accent-gold/30">البدء يدوياً</button>
         </div>
     </div>
+</main>
 
-    <!-- AI MODAL -->
-    <div id="ai-modal" class="modal-backdrop fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-[100]" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="ai-title">
-        <div class="bg-dark-secondary rounded-xl shadow-2xl border border-accent-gold/50 max-w-3xl w-full p-0 flex flex-col h-[85vh] overflow-hidden transform transition-all duration-300 scale-95" onclick="event.stopPropagation()">
-            <div class="flex justify-between items-center p-4 bg-dark-primary/50 border-b border-dark-primary">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-full bg-accent-gold flex items-center justify-center text-dark-primary text-xl animate-pulse">🤖</div>
-                    <div>
-                        <h2 id="ai-title" class="text-lg font-bold text-accent-gold">مساعد ض</h2>
-                        <p class="text-xs text-text-light/60">مستشارك الذكي للاستراتيجيات</p>
-                    </div>
-                </div>
-                <button type="button" onclick="app.closeModal('ai-modal')" class="text-text-light/70 hover:text-accent-gold text-2xl" aria-label="إغلاق">&times;</button>
+<!-- Client Modal -->
+<div id="client-info-modal" class="modal-backdrop fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4" aria-hidden="true" style="display:none;">
+    <div class="bg-dark-secondary rounded-xl p-6 max-w-2xl w-full" onclick="event.stopPropagation()">
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-2xl font-bold text-accent-gold">بيانات المشروع</h2>
+            <button onclick="app.closeModal('client-info-modal')" aria-label="غلق">×</button>
+        </div>
+        <form id="client-info-form" onsubmit="event.preventDefault(); app.handleClientInfoSubmit();">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div><label class="block mb-1 text-accent-gold">اسم المشروع *</label><input id="client-name" required class="w-full p-3 rounded-lg" /></div>
+                <div><label class="block mb-1 text-accent-gold">رقم التواصل</label><input id="client-contact-phone" class="w-full p-3 rounded-lg" /></div>
             </div>
-
-            <div id="chat-log" class="chat-log w-full flex-grow bg-dark-primary/20 p-4 overflow-y-auto flex flex-col space-y-4 scrollbar-thin" aria-live="polite"></div>
-
-            <div class="relative p-4 bg-dark-secondary border-t border-dark-primary">
-                <textarea id="chat-input" rows="1" class="w-full p-4 pl-14 rounded-xl border border-dark-primary bg-dark-primary/50 focus:border-accent-gold outline-none resize-none overflow-hidden" placeholder="اكتب ردك هنا..." oninput="this.style.height=''; this.style.height=this.scrollHeight + 'px'"></textarea>
-                <button id="chat-send-btn" type="button" onclick="app.sendChatMessage()" class="absolute left-6 bottom-6 bg-accent-gold text-dark-primary w-10 h-10 rounded-lg hover:bg-white transition-colors flex items-center justify-center shadow-lg disabled:opacity-50 disabled:cursor-not-allowed" aria-label="إرسال">
-                    <svg class="w-5 h-5 transform rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
-                </button>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">
+                <div><label class="block mb-1 text-accent-gold">رابط المتجر</label><input id="client-link" type="url" class="w-full p-3 rounded-lg" /></div>
+                <div><label class="block mb-1 text-accent-gold">حسابات السوشيال</label><input id="client-social-links" class="w-full p-3 rounded-lg" placeholder="روابط أو حسابات مفصولة بفواصل"/></div>
             </div>
+            <div class="mt-3"><label class="block mb-1 text-accent-gold">نوع النشاط</label><input id="client-business-type" class="w-full p-3 rounded-lg" /></div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">
+                <div><label class="block mb-1 text-accent-gold">الجمهور المستهدف</label><input id="client-target-audience" class="w-full p-3 rounded-lg" /></div>
+                <div><label class="block mb-1 text-accent-gold">أبرز المنافسين</label><input id="client-competitors" class="w-full p-3 rounded-lg" /></div>
+            </div>
+            <div class="mt-3"><label class="block mb-1 text-accent-gold">أبرز التحديات</label><textarea id="client-challenges" rows="2" class="w-full p-3 rounded-lg"></textarea></div>
+            <div class="mt-3"><label class="block mb-1 text-accent-gold">ملاحظات إضافية</label><textarea id="client-additional-info" rows="2" class="w-full p-3 rounded-lg"></textarea></div>
+            <div class="mt-4">
+                <button id="save-client-info-btn" class="w-full py-3 rounded-xl bg-accent-gold text-dark-primary font-bold">حفظ وبدء التحليل</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- AI Modal -->
+<div id="ai-modal" class="modal-backdrop fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4" aria-hidden="true" style="display:none;">
+    <div class="bg-dark-secondary rounded-xl max-w-3xl w-full h-[85vh] overflow-hidden flex flex-col" onclick="event.stopPropagation()">
+        <div class="flex items-center justify-between p-4 border-b border-dark-primary bg-dark-primary/30">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-full bg-accent-gold flex items-center justify-center">🤖</div>
+                <div><h3 class="text-accent-gold font-bold">مساعد ض</h3><div class="text-xs text-text-light/70">مستشارك الذكي للاستراتيجيات</div></div>
+            </div>
+            <button onclick="app.closeModal('ai-modal')">×</button>
+        </div>
+
+        <div id="chat-log" class="chat-log p-4 flex flex-col gap-3 bg-dark-primary/10"></div>
+
+        <div class="p-4 border-t border-dark-primary bg-dark-secondary">
+            <textarea id="chat-input" rows="1" placeholder="اكتب ردك هنا..." class="w-full p-4 rounded-xl resize-none" oninput="this.style.height=''; this.style.height = this.scrollHeight + 'px'"></textarea>
+            <button id="chat-send-btn" class="mt-2 px-4 py-2 rounded-lg bg-accent-gold text-dark-primary font-bold" onclick="app.sendChatMessage()">إرسال</button>
         </div>
     </div>
+</div>
 
-    <!-- APP VIEW -->
-    <div id="app-view" class="min-h-screen flex flex-col print-area hidden">
-        <header class="sticky top-0 bg-dark-primary shadow-lg p-4 z-40 no-print border-b border-dark-secondary">
-            <div class="max-w-7xl mx-auto flex justify-between items-center">
-                <div class="flex items-center gap-4">
-                    <img src="https://i.ibb.co/fz5m8DNf/imgi-102-cropped-cropped-logo-daad-2000x2000-1-1-700x700-removebg-preview.png" alt="Daad Logo" class="h-10 w-auto rounded shadow-sm border border-accent-gold/30 bg-dark-secondary" />
-                    <button type="button" onclick="app.openModal('client-info-modal')" class="bg-dark-secondary hover:bg-dark-secondary/80 text-accent-gold font-bold py-2 px-4 rounded-lg border border-accent-gold/30 text-sm transition-colors">
-                        📝 بيانات المشروع
-                    </button>
-                </div>
+<a class="logo-float" href="https://wa.me/+966592136734" target="_blank" aria-label="واتساب">
+    <img src="https://i.ibb.co/fz5m8DNf/imgi-102-cropped-cropped-logo-daad-2000x2000-1-1-700x700-removebg-preview.png" style="width:48px;height:48px;object-fit:cover;" />
+</a>
 
-                <div class="flex gap-3">
-                    <button type="button" onclick="app.openModal('ai-modal')" class="bg-dark-secondary hover:bg-dark-secondary/80 text-accent-gold font-bold py-2 px-4 rounded-lg border border-accent-gold/30 text-sm transition-colors flex items-center gap-2">
-                        <span>🤖</span> <span class="hidden sm:inline">مساعد ض</span>
-                    </button>
+<script>
+const app = (function(){
+    const CONSTANTS = {
+        URLS: {
+            STORAGE: "https://script.google.com/macros/s/AKfycbw-6vu6Hbj-gcENg7Mv4q0MZLEYqs2WgceyY0miD4soWdrp1JxoEOgYYSBfI2Z9p0aV/exec",
+            ASSISTANT: "https://script.google.com/macros/s/AKfycbwlvaIdSNqYgNLO182hDyEmMZi09EpKXfjJ999Nf4QLJ-zP38hiXN54SZgWwO2wStVb3A/exec"
+        },
+        KEYS: { CLIENT: 'daad_client_v2', PROPOSAL: 'daad_proposal_v2' },
+        MAX_MONTHS: 12,
+        TIMEOUT_MS: 30000
+    };
 
-                    <button type="button" onclick="app.generateTechnicalProposal()" class="bg-accent-gold text-dark-primary font-bold py-2 px-6 rounded-lg hover:bg-white transition-colors text-sm shadow-md">
-                        🖨️ طباعة العرض
-                    </button>
-                </div>
-            </div>
-        </header>
+    let state = { monthlySelections:[{}], visibleMonths:1, chatHistory:[], isAssistantMode:false };
 
-        <main class="flex-grow max-w-7xl mx-auto w-full p-4 md:p-8">
-            <div id="system-message" class="fixed top-20 right-4 max-w-sm w-full p-4 rounded-xl shadow-2xl transition-all duration-500 transform translate-x-full opacity-0 no-print z-50 border-r-4 font-bold" role="status" aria-live="polite"></div>
+    const $ = id => document.getElementById(id);
+    const escapeHtml = str => (typeof str === 'string') ? str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;') : str;
 
-            <div id="months-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mt-4"></div>
+    function openModalById(id){
+        const el = $(id+'-modal') || $(id);
+        if(!el) return;
+        el.style.display = 'flex';
+        el.setAttribute('aria-hidden','false');
+    }
+    function closeModal(id){
+        const el = $(id+'-modal') || $(id);
+        if(!el) return;
+        el.style.display = 'none';
+        el.setAttribute('aria-hidden','true');
+    }
 
-            <div class="flex justify-center mt-10 mb-10 no-print">
-                <button onclick="app.addNextMonth()" id="add-month-button" class="bg-highlight-green hover:bg-green-600 text-white font-bold py-3 px-10 rounded-xl shadow-lg transition-transform hover:scale-105 flex items-center gap-2">
-                    <span class="text-xl">+</span> شهر جديد
-                </button>
-            </div>
-        </main>
-    </div>
+    function fillForm(info){
+        if(!info) return;
+        const map = { name:'client-name', phone:'client-contact-phone', link:'client-link', businessType:'client-business-type', targetAudience:'client-target-audience', competitors:'client-competitors', strategyGoal:'client-strategy-goal', budgetRange:'client-budget-range', socials:'client-social-links', challenges:'client-challenges', additionalInfo:'client-additional-info' };
+        Object.keys(map).forEach(k => { const el = $(map[k]); if(el) el.value = info[k] || ''; });
+    }
 
-    <!-- WhatsApp -->
-    <a href="https://wa.me/+966592136734" target="_blank" class="logo-float no-print" title="تواصل معنا" aria-label="واتساب">
-        <img src="https://i.ibb.co/fz5m8DNf/imgi-102-cropped-cropped-logo-daad-2000x2000-1-1-700x700-removebg-preview.png" onerror="this.onerror=null; this.src='https://placehold.co/70x70/501323/D5C5A0?text=WP';" alt="واتساب" />
-    </a>
+    function getFormInfo(){
+        return {
+            name: $('client-name').value.trim(),
+            phone: $('client-contact-phone').value.trim(),
+            link: $('client-link').value.trim(),
+            businessType: $('client-business-type').value.trim(),
+            targetAudience: $('client-target-audience').value.trim(),
+            strategyGoal: $('client-strategy-goal') ? $('client-strategy-goal').value : '',
+            budgetRange: $('client-budget-range') ? $('client-budget-range').value : '',
+            competitors: $('client-competitors').value.trim(),
+            socials: $('client-social-links').value.trim(),
+            challenges: $('client-challenges').value.trim(),
+            additionalInfo: $('client-additional-info').value.trim(),
+            timestamp: new Date().toISOString()
+        };
+    }
 
-    <script>
-        const app = (function() {
-            const CONSTANTS = {
-                URLS: {
-                    STORAGE: "https://script.google.com/macros/s/AKfycbzo1toiqVOkzdFhM7Lxhe6OhNF62nbS8Mq3xBd-yMre0sfBmp6LVyXNbLaECEA07Vbb/exec",
-                    ASSISTANT: "https://script.google.com/macros/s/AKfycbyI9TevS63W6yny7OatgpwzM7EVwG8albjZMBt6YDWEKgDoZH_K15Ev-RXuy_b3V8ktcA/exec"
-                },
-                KEYS: { PROPOSAL: 'daad_proposal_v2', CLIENT: 'daad_client_v2' },
-                MAX_MONTHS: 12,
-                TIMEOUT_MS: 30000
-            };
+    async function sendToStorage(data){
+        try {
+            const res = await fetch(CONSTANTS.URLS.STORAGE, { method:'POST', mode:'cors', headers:{'Content-Type':'application/json'}, body: JSON.stringify(data), keepalive:true });
+            if(!res.ok) throw new Error('Storage response not OK: ' + res.status);
+            return res;
+        } catch(e) {
+            // fallback to no-cors best-effort
+            try {
+                await fetch(CONSTANTS.URLS.STORAGE, { method:'POST', mode:'no-cors', headers:{'Content-Type':'application/json'}, body: JSON.stringify(data), keepalive:true });
+                return { ok:true, fallback:true };
+            } catch(err) { throw e; }
+        }
+    }
 
-            let state = {
-                monthlySelections: [{}],
-                visibleMonths: 1,
-                chatHistory: [],
-                isAssistantMode: false
-            };
+    // ===== تحسين الاتصال بالمساعد: يحاول CORS ثم no-cors fallback ويعطي رسائل واضحة =====
+    async function callAssistantAPI(originalPayload){
+        const controller = new AbortController();
+        const timeoutId = setTimeout(()=>controller.abort(), CONSTANTS.TIMEOUT_MS);
 
-            const services = [
-                {id:'salla_zid', name:'انشاء سلة/زد'},
-                {id:'wordpress', name:'انشاء ووردبرس'},
-                {id:'ui_ux', name:'UI/UX'},
-                {id:'mb', name:'Media Buying'},
-                {id:'seo', name:'SEO'},
-                {id:'social', name:'Social Media'},
-                {id:'cro', name:'CRO'},
-                {id:'branding', name:'Branding'}
-            ];
-
-            const $ = (id) => document.getElementById(id);
-
-            const escapeHtml = (unsafe) => {
-                if (typeof unsafe !== 'string') return unsafe;
-                return unsafe.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
-                             .replace(/"/g, "&quot;").replace(/'/g, "&#039;");
-            };
-
-            function loadState() {
-                try {
-                    const savedProposal = localStorage.getItem(CONSTANTS.KEYS.PROPOSAL);
-                    if (savedProposal) {
-                        const parsed = JSON.parse(savedProposal);
-                        state.monthlySelections = parsed.monthlySelections || [{}];
-                        state.visibleMonths = Math.min(state.monthlySelections.length, CONSTANTS.MAX_MONTHS);
-                    }
-                    const savedClient = localStorage.getItem(CONSTANTS.KEYS.CLIENT);
-                    if (savedClient) {
-                        const info = JSON.parse(savedClient);
-                        fillForm(info);
-                    }
-                } catch (e) { console.error("Error loading state:", e); }
-            }
-
-            function saveState() {
-                try {
-                    localStorage.setItem(CONSTANTS.KEYS.PROPOSAL, JSON.stringify({
-                        monthlySelections: state.monthlySelections.slice(0, state.visibleMonths)
-                    }));
-                } catch (e) { console.warn("Storage quota exceeded"); }
-            }
-
-            function fillForm(info) {
-                if (!info) return;
-                const map = {
-                    name: 'client-name',
-                    phone: 'client-contact-phone',
-                    link: 'client-link',
-                    businessType: 'client-business-type',
-                    targetAudience: 'client-target-audience',
-                    strategyGoal: 'client-strategy-goal',
-                    budgetRange: 'client-budget-range',
-                    competitors: 'client-competitors',
-                    socials: 'client-social-links',
-                    challenges: 'client-challenges',
-                    additionalInfo: 'client-additional-info'
-                };
-                Object.keys(map).forEach(k => {
-                    const el = $(map[k]);
-                    if (el) el.value = info[k] || '';
-                });
-            }
-
-            function getFormInfo() {
-                return {
-                    name: $('client-name').value.trim(),
-                    phone: $('client-contact-phone').value.trim(),
-                    link: $('client-link').value.trim(),
-                    businessType: $('client-business-type').value.trim(),
-                    targetAudience: $('client-target-audience').value.trim(),
-                    strategyGoal: $('client-strategy-goal').value,
-                    budgetRange: $('client-budget-range').value,
-                    competitors: $('client-competitors').value.trim(),
-                    socials: $('client-social-links').value.trim(),
-                    challenges: $('client-challenges').value.trim(),
-                    additionalInfo: $('client-additional-info').value.trim(),
-                    timestamp: new Date().toISOString()
-                };
-            }
-
-            // Try CORS first; if fails fallback to no-cors (to improve resilience with Google Apps Script).
-            async function sendToStorage(data) {
-                try {
-                    const res = await fetch(CONSTANTS.URLS.STORAGE, {
-                        method: 'POST',
-                        mode: 'cors',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(data),
-                        keepalive: true
-                    });
-                    if (!res.ok) {
-                        // If server rejects CORS or returns error, still try a no-cors fallback to avoid blocking UX.
-                        throw new Error(`Storage request failed (status ${res.status})`);
-                    }
-                    return res;
-                } catch (err) {
-                    // fallback — best-effort, response will be opaque but it often succeeds for simple Google deploys
-                    try {
-                        await fetch(CONSTANTS.URLS.STORAGE, {
-                            method: 'POST',
-                            mode: 'no-cors',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify(data),
-                            keepalive: true
-                        });
-                        return { ok: true, fallback: true };
-                    } catch (e) {
-                        throw err; // rethrow original error
-                    }
-                }
-            }
-
-            async function callAssistantAPI(originalPayload) {
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), CONSTANTS.TIMEOUT_MS);
-                const client = originalPayload.clientInfo || {};
-                const systemPrompt = `
+        const client = originalPayload.clientInfo || {};
+        const systemPrompt = `
 أنت "مساعد ضاد"، المستشار الذكي لشركة "ضاد".
-لغة فصيحة وسلسة، أسلوب مهذب وواثق مع لمسة دعابة ذكية.
 استخدم بيانات العميل التالية عند الحاجة:
 - الاسم: ${client.name || 'غير محدد'}
 - النشاط: ${client.businessType || 'غير محدد'}
@@ -437,282 +178,125 @@
 - الميزانية: ${client.budgetRange || 'غير محدد'}
 - الجمهور: ${client.targetAudience || 'غير محدد'}
 - التحديات: ${client.challenges || 'لا يوجد'}
-تعليمات: رد مقتضب واضح عملي، وإذا احتاج توضيح — اطلبه.
-`;
+رد مختصر وعملي، وإذا احتجت توضيح اطلبه.
+        `;
 
-                let contents = JSON.parse(JSON.stringify(originalPayload.history || []));
+        let contents = JSON.parse(JSON.stringify(originalPayload.history || []));
+        if(contents.length > 0 && contents[0].role === 'user'){
+            contents[0].parts[0].text = systemPrompt + "\n\n---\n\n" + contents[0].parts[0].text;
+        } else if(contents.length === 0){
+            contents = [{ role:"user", parts:[{ text: systemPrompt }] }];
+        }
 
-                if (contents.length > 0 && contents[0].role === 'user') {
-                    contents[0].parts[0].text = systemPrompt + "\n\n---\n\n" + contents[0].parts[0].text;
-                } else if (contents.length === 0) {
-                    contents = [{ role: "user", parts: [{ text: systemPrompt }] }];
-                }
+        const geminiBody = { contents };
 
-                const geminiBody = { contents };
+        // محاولة CORS
+        try {
+            const response = await fetch(CONSTANTS.URLS.ASSISTANT, {
+                method:'POST', mode:'cors', headers:{ 'Content-Type':'application/json' },
+                body: JSON.stringify(geminiBody), signal: controller.signal, credentials:'omit'
+            });
+            clearTimeout(timeoutId);
 
-                try {
-                    const response = await fetch(CONSTANTS.URLS.ASSISTANT, {
-                        method: 'POST',
-                        mode: 'cors',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(geminiBody),
-                        signal: controller.signal
-                    });
-                    clearTimeout(timeoutId);
-
-                    if (!response.ok) {
-                        const errText = await response.text().catch(() => '');
-                        try {
-                            const errJson = JSON.parse(errText);
-                            if (errJson.error && errJson.error.message) throw new Error(errJson.error.message);
-                        } catch (e) {}
-                        throw new Error(`Server Error: ${response.status} - ${errText}`);
-                    }
-
-                    const text = await response.text();
-                    try {
-                        const json = JSON.parse(text);
-                        return json.candidates?.[0]?.content?.parts?.[0]?.text || json.text || json.reply || JSON.stringify(json);
-                    } catch (e) {
-                        return text;
-                    }
-                } catch (error) {
-                    clearTimeout(timeoutId);
-                    if (error.name === 'AbortError') throw new Error('انتهت مهلة الاتصال. حاول مرة أخرى.');
-                    throw error;
-                }
+            if(!response.ok){
+                const errText = await response.text().catch(()=>'');
+                try { const errJson = JSON.parse(errText||'{}'); if(errJson.error && errJson.error.message) throw new Error(errJson.error.message); } catch(e){}
+                throw new Error(`Server Error: ${response.status} - ${errText || response.statusText}`);
             }
 
-            function renderGrid() {
-                const grid = $('months-grid');
-                grid.innerHTML = '';
-                for (let i = 0; i < state.visibleMonths; i++) {
-                    const wrapper = document.createElement('div');
-                    wrapper.className = "bg-dark-secondary rounded-xl p-6 shadow-lg border border-accent-gold/30 hover:border-accent-gold transition-colors page-break-inside-avoid animate-fade-in";
-
-                    let html = `<h2 class="text-xl font-bold text-accent-gold mb-4 border-b border-dark-primary pb-2 flex justify-between items-center">
-                        <span>الشهر ${i+1}</span>
-                        <span class="text-xs text-text-light/50 font-normal mt-1">اختر الخدمات</span>
-                    </h2><div class="space-y-3">`;
-
-                    services.forEach(s => {
-                        const isChecked = state.monthlySelections[i] && state.monthlySelections[i][s.id];
-                        html += `
-                        <label class="flex items-center cursor-pointer group hover:bg-dark-primary/30 p-1 rounded transition-colors">
-                            <input type="checkbox" ${isChecked ? 'checked' : ''} 
-                                onchange="app.updateSelection(${i}, '${s.id}', this.checked)" 
-                                class="w-5 h-5 ml-3 accent-accent-gold focus:ring-offset-0 focus:ring-0" aria-label="${s.name}">
-                            <span class="text-text-light group-hover:text-white transition-colors select-none">${s.name}</span>
-                        </label>`;
-                    });
-
-                    html += `</div>`;
-                    wrapper.innerHTML = html;
-                    grid.appendChild(wrapper);
-                }
-                saveState();
+            const txt = await response.text();
+            try {
+                const json = JSON.parse(txt);
+                return json.candidates?.[0]?.content?.parts?.[0]?.text || json.text || json.reply || JSON.stringify(json);
+            } catch(e){
+                return txt;
             }
+        } catch(err){
+            clearTimeout(timeoutId);
+            console.error("Assistant fetch error:", err);
+            if(err.name === 'AbortError') throw new Error('انتهت مهلة الاتصال بالمساعد. حاول مرة ثانية.');
 
-            function updateSelection(monthIndex, serviceId, isChecked) {
-                if (!state.monthlySelections[monthIndex]) state.monthlySelections[monthIndex] = {};
-                if (isChecked) state.monthlySelections[monthIndex][serviceId] = true;
-                else delete state.monthlySelections[monthIndex][serviceId];
-                saveState();
-            }
-
-            function addNextMonth() {
-                if (state.visibleMonths < CONSTANTS.MAX_MONTHS) {
-                    state.visibleMonths++;
-                    state.monthlySelections.push({});
-                    renderGrid();
-                    window.scrollBy({ top: 200, behavior: 'smooth' });
-                } else {
-                    showMessage("لقد وصلت للحد الأقصى للأشهر (12)", "bg-yellow-100", "text-dark-primary");
-                }
-            }
-
-            function showMessage(msg, bgClass = "bg-accent-gold", textClass = "text-dark-primary") {
-                const el = $('system-message');
-                el.textContent = msg;
-                el.className = `fixed top-20 right-4 max-w-sm w-full p-4 rounded-xl shadow-2xl transition-all duration-500 transform z-50 border-r-4 font-bold ${bgClass} ${textClass}`;
-                // animate in
-                requestAnimationFrame(() => {
-                    el.style.transform = 'translateX(0)';
-                    el.style.opacity = '1';
+            // fallback: try no-cors (won't be readable) — inform the user about CORS
+            try {
+                await fetch(CONSTANTS.URLS.ASSISTANT, {
+                    method:'POST', mode:'no-cors', headers:{ 'Content-Type':'application/json' },
+                    body: JSON.stringify(geminiBody), signal: controller.signal, keepalive:true
                 });
-                setTimeout(() => {
-                    el.style.transform = '';
-                    el.style.opacity = '';
-                    el.className = 'fixed top-20 right-4 max-w-sm w-full p-4 rounded-xl shadow-2xl transition-all duration-500 transform translate-x-full opacity-0 no-print z-50 border-r-4 font-bold';
-                }, 3500);
+                throw new Error('تم إرسال الطلب لكن المتصفح منع قراءة الرد (opaque response). تأكد من تفعيل Access-Control-Allow-Origin على السيرفر.');
+            } catch(fallbackErr){
+                console.error('Fallback fetch failed:', fallbackErr);
+                throw new Error('فشل الاتصال بالمساعد. غالباً السبب: سياسة CORS أو رابط assistant غير منشور للجميع. راجع نشر Web App وأضف رؤوس CORS.');
             }
+        }
+    }
 
-            function openModal(id, autoTriggerAI = false) {
-                const modal = $(id);
-                if (!modal) return;
-                modal.setAttribute('aria-hidden', 'false');
-                const inner = modal.firstElementChild;
-                inner.classList.remove('scale-95');
-                inner.classList.add('scale-100');
-                if (id === 'ai-modal') {
-                    setTimeout(() => $('chat-input').focus(), 300);
-                    if (!autoTriggerAI && $('chat-log').children.length === 0) {
-                        addChatMsg("👋 حياك الله! أنا 'مساعد ض'، مستشارك الذكي لاستراتيجيات النمو. كيف أقدر أساعدك في مشروعك اليوم؟", 'bot');
-                    }
-                }
-            }
+    // UI helpers
+    function addChatMsg(text, sender='bot', isLoading=false){
+        const log = $('chat-log');
+        const wrapper = document.createElement('div');
+        wrapper.className = 'chat-message ' + (sender==='user' ? 'user-message' : 'bot-message');
+        if(isLoading) wrapper.innerHTML = '<div class="loading-dots"><span></span><span></span><span></span></div>';
+        else wrapper.innerHTML = escapeHtml(String(text)).replace(/\n/g,'<br>');
+        log.appendChild(wrapper);
+        log.scrollTop = log.scrollHeight;
+    }
+    function removeLoading(){ const l = document.querySelector('.loading-dots'); if(l) l.remove(); }
 
-            function closeModal(id) {
-                const modal = $(id);
-                if (!modal) return;
-                modal.setAttribute('aria-hidden', 'true');
-                const inner = modal.firstElementChild;
-                inner.classList.add('scale-95');
-                inner.classList.remove('scale-100');
-            }
+    // handlers
+    async function handleClientInfoSubmit(){
+        const info = getFormInfo();
+        if(!info.name){ alert('الرجاء إدخال اسم المشروع'); $('client-name').focus(); return; }
+        localStorage.setItem(CONSTANTS.KEYS.CLIENT, JSON.stringify(info));
+        const btn = $('save-client-info-btn'); const original = btn.innerHTML;
+        btn.disabled = true; btn.innerHTML = 'جاري الحفظ...';
+        try {
+            await sendToStorage(info);
+            closeModal('client-info-modal');
+            if(state.isAssistantMode) openModalById('ai-modal');
+            alert('تم الحفظ وإرسال البيانات (إن أمكن).');
+        } catch(e){
+            console.error('Storage error', e);
+            alert('تم الحفظ محليًا ولكن واجهنا مشكلة في إرسال البيانات للسيرفر.');
+            closeModal('client-info-modal');
+            if(state.isAssistantMode) openModalById('ai-modal');
+        } finally {
+            btn.disabled = false; btn.innerHTML = original;
+        }
+    }
 
-            function addChatMsg(text, sender, isLoading = false) {
-                const log = $('chat-log');
-                const div = document.createElement('div');
-                div.className = `chat-message p-4 shadow-sm mb-3 animate-fade-in ${sender === 'user' ? 'user-message' : 'bot-message'}`;
+    async function sendChatMessage(){
+        const input = $('chat-input'); const txt = input.value.trim(); if(!txt) return;
+        input.value=''; input.style.height='auto';
+        addChatMsg(txt,'user');
+        state.chatHistory.push({ role:'user', parts:[{ text: txt }] });
+        addChatMsg('...', 'bot', true);
+        try {
+            const info = JSON.parse(localStorage.getItem(CONSTANTS.KEYS.CLIENT) || '{}');
+            const reply = await callAssistantAPI({ history: state.chatHistory, clientInfo: info });
+            removeLoading(); addChatMsg(reply,'bot'); state.chatHistory.push({ role:'model', parts:[{ text: reply }] });
+        } catch(e){
+            removeLoading(); addChatMsg('🚫 حدث خطأ: ' + e.message, 'bot');
+        }
+    }
 
-                if (isLoading) {
-                    div.id = "loading-msg";
-                    div.innerHTML = `<div class="loading-dots flex items-center"><span></span><span></span><span></span></div>`;
-                } else {
-                    let safeText = escapeHtml(text);
-                    safeText = safeText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-                    safeText = safeText.replace(/\n/g, '<br>');
-                    div.innerHTML = safeText;
-                }
+    // init & bindings
+    function init(){
+        // wire buttons
+        $('btn-assistant').addEventListener('click', ()=>{ state.isAssistantMode=true; document.querySelector('main').style.display='none'; openModalById('client-info'); });
+        $('btn-manual').addEventListener('click', ()=>{ alert('وضع العمل اليدوي — تحت التطوير'); });
+        document.getElementById('client-info-modal').addEventListener('click', ()=> closeModal('client-info-modal'));
+        document.getElementById('ai-modal').addEventListener('click', ()=> closeModal('ai-modal'));
+        const saved = localStorage.getItem(CONSTANTS.KEYS.CLIENT); if(saved) fillForm(JSON.parse(saved));
+        document.addEventListener('keydown', e => { if(e.key==='Escape'){ closeModal('ai-modal'); closeModal('client-info-modal'); } });
+        $('chat-input').addEventListener('keypress', e => { if(e.key==='Enter' && !e.shiftKey){ e.preventDefault(); sendChatMessage(); } });
+    }
 
-                log.appendChild(div);
-                log.scrollTop = log.scrollHeight;
-            }
+    return {
+        init, openModal: openModalById, closeModal, handleClientInfoSubmit, sendChatMessage, sendToStorage, callAssistantAPI
+    };
+})();
 
-            function removeLoading() {
-                const l = $("loading-msg");
-                if (l) l.remove();
-            }
-
-            async function handleClientInfoSubmit() {
-                const info = getFormInfo();
-                if (!info.name) {
-                    $('client-name').focus();
-                    showMessage("عفواً، اسم المشروع مطلوب!", "bg-red-100", "text-red-700");
-                    return;
-                }
-
-                localStorage.setItem(CONSTANTS.KEYS.CLIENT, JSON.stringify(info));
-                const btn = $('save-client-info-btn');
-                const originalText = btn.innerHTML;
-                btn.disabled = true;
-                btn.innerHTML = `<div class="loading-dots inline-block ml-2"><span></span><span></span><span></span></div> جاري الحفظ...`;
-
-                try {
-                    await sendToStorage(info);
-                    showMessage("✅ تم حفظ البيانات وإرسالها للسيرفر!", "bg-green-100", "text-green-800");
-                    closeModal('client-info-modal');
-                    if (state.isAssistantMode) setTimeout(() => openModal('ai-modal', false), 500);
-                } catch (e) {
-                    console.error("Storage Error:", e);
-                    showMessage("⚠️ تم الحفظ محلياً فقط (مشكلة اتصال)", "bg-yellow-100", "text-dark-primary");
-                    closeModal('client-info-modal');
-                    if (state.isAssistantMode) setTimeout(() => openModal('ai-modal', false), 500);
-                } finally {
-                    btn.disabled = false;
-                    btn.innerHTML = originalText;
-                }
-            }
-
-            async function sendChatMessage() {
-                const input = $('chat-input');
-                const txt = input.value.trim();
-                if (!txt) return;
-                input.value = '';
-                input.style.height = 'auto';
-                addChatMsg(txt, 'user');
-                state.chatHistory.push({ role: 'user', parts: [{ text: txt }] });
-                $('chat-send-btn').disabled = true;
-                addChatMsg("...", 'bot', true);
-
-                const info = JSON.parse(localStorage.getItem(CONSTANTS.KEYS.CLIENT) || '{}');
-
-                try {
-                    const reply = await callAssistantAPI({ history: state.chatHistory, clientInfo: info, isFirstRun: false });
-                    removeLoading();
-                    addChatMsg(reply, 'bot');
-                    state.chatHistory.push({ role: 'model', parts: [{ text: reply }] });
-                } catch (e) {
-                    removeLoading();
-                    addChatMsg(`🚫 حدث خطأ: ${e.message}`, 'bot');
-                } finally {
-                    $('chat-send-btn').disabled = false;
-                    $('chat-input').focus();
-                }
-            }
-
-            // keyboard shortcuts (Escape to close modals)
-            function bindGlobalKeys() {
-                document.addEventListener('keydown', (ev) => {
-                    if (ev.key === 'Escape') {
-                        const modals = ['ai-modal', 'client-info-modal'];
-                        modals.forEach(id => {
-                            const m = $(id);
-                            if (m && m.getAttribute('aria-hidden') === 'false') closeModal(id);
-                        });
-                    }
-                });
-            }
-
-            return {
-                selectManualMode: () => {
-                    $('home-view').classList.add('hidden');
-                    $('app-view').classList.remove('hidden');
-                    renderGrid();
-                },
-                selectAssistantMode: () => {
-                    state.isAssistantMode = true;
-                    $('home-view').classList.add('hidden');
-                    $('app-view').classList.remove('hidden');
-                    renderGrid();
-                    openModal('client-info-modal');
-                },
-                openModal: (id) => openModal(id),
-                closeModal: (id) => closeModal(id),
-                handleClientInfoSubmit,
-                sendChatMessage,
-                updateSelection,
-                addNextMonth,
-                generateTechnicalProposal: () => window.print(),
-                init: () => {
-                    loadState();
-                    renderGrid();
-                    bindGlobalKeys();
-
-                    // keyboard enter to send (in textarea)
-                    $('chat-input').addEventListener('keypress', (e) => {
-                        if (e.key === 'Enter' && !e.shiftKey) {
-                            e.preventDefault();
-                            sendChatMessage();
-                        }
-                    });
-
-                    // wire up home cards
-                    const assistantCard = document.getElementById('assistant-card');
-                    const manualCard = document.getElementById('manual-card');
-                    assistantCard.addEventListener('click', () => app.selectAssistantMode());
-                    assistantCard.addEventListener('keypress', (e) => { if (e.key === 'Enter') app.selectAssistantMode(); });
-                    manualCard.addEventListener('click', () => {
-                        $('home-view').classList.add('hidden');
-                        $('app-view').classList.remove('hidden');
-                        renderGrid();
-                    });
-                }
-            };
-        })();
-
-        document.addEventListener('DOMContentLoaded', app.init);
-    </script>
+document.addEventListener('DOMContentLoaded', () => app.init());
+</script>
 </body>
 </html>
